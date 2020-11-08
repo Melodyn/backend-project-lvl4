@@ -2,8 +2,8 @@ import createServer from './src/index.js';
 
 class App {
   constructor(config) {
-    this.config = config;
     console.log({ config });
+    this.config = config;
     this.appServer = createServer();
   }
 

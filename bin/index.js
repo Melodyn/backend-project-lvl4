@@ -4,7 +4,9 @@ import dotenv from 'dotenv';
 import App from '../index.js';
 
 try {
-  const { parsed: config } = dotenv.config();
+  const config = process.env.NODE_ENV === 'production'
+    ? process.env
+    : dotenv.config().parsed;
   const app = new App(config);
   app.start();
 } catch (err) {
