@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "npx -n '--experimental-vm-modules --no-warnings' jest --colors"
+    "test": "npx -n '--experimental-vm-modules --no-warnings' jest --colors --detectOpenHandles"
   },
   "bin": {
     "task-manager": "./bin/task-manager.js"
@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/Melodyn/backend-project-lvl4#readme",
   "dependencies": {
+    "dotenv": "^8.2.0",
     "fastify": "^3.7.0",
     "rollbar": "^2.19.4"
   },
