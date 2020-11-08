@@ -5,10 +5,11 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "npx -n '--experimental-vm-modules --no-warnings' jest --colors --detectOpenHandles"
+    "test": "npx -n '--experimental-vm-modules --no-warnings' jest --colors --detectOpenHandles",
+    "start": "./bin/index.js"
   },
   "bin": {
-    "task-manager": "./bin/task-manager.js"
+    "task-manager": "./bin/index.js"
   },
   "jest": {
     "testEnvironment": "node",
