@@ -1,9 +1,8 @@
 import createServer from './src/index.js';
-import { validateConfig } from './src/utils.js';
 
 class App {
   constructor(config) {
-    this.config = validateConfig(config);
+    this.config = config;
     this.appServer = createServer(config);
   }
 

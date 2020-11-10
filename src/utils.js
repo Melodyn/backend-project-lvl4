@@ -14,7 +14,7 @@ export const validateConfig = (config) => {
   });
 
   try {
-    schema.validateSync(config, { abortEarly: false });
+    return schema.validateSync(config, { abortEarly: false });
   } catch (err) {
     const errorsString = ['Config validation error:', ...err.errors].join('\n');
     throw new Error(errorsString);
