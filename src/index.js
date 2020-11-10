@@ -11,7 +11,7 @@ export default (config) => {
       res.send(`Hello, ${name}!`);
     })
     .setErrorHandler((err, req, res) => {
-      rollbar.errorHandler()(err, req, res);
+      if (config.NODE_ENV !== 'test') rollbar.errorHandler()(err, req, res);
       res.send(err);
     });
 };
