@@ -13,7 +13,7 @@ class App {
   start() {
     const { PORT, HOST } = this.config;
 
-    this.appServer.listen(Number(PORT), HOST);
+    this.appServer.listen(PORT, HOST);
   }
 
   stop() {
