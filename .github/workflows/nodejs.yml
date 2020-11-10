@@ -36,3 +36,7 @@ jobs:
           heroku_app_name: hexlet-melodyn-task-manager
           heroku_email: samelodyn@gmail.com
           branch: main
+        env:
+          NODE_ENV: production
+          HOST: 0.0.0.0
+          ROLLBAR_PSI_TOKEN: ${{ secrets.ROLLBAR_PSI_TOKEN }}
