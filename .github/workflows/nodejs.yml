@@ -37,6 +37,6 @@ jobs:
           heroku_email: samelodyn@gmail.com
           branch: main
         env:
-          NODE_ENV: production
-          SERVER_HOST: 0.0.0.0
-          ROLLBAR_PSI_TOKEN: ${{ secrets.ROLLBAR_PSI_TOKEN }}
+          HD_NODE_ENV: production
+          HD_SERVER_HOST: 0.0.0.0
+          HD_ROLLBAR_PSI_TOKEN: ${{ secrets.ROLLBAR_PSI_TOKEN }}
