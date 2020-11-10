@@ -11,9 +11,9 @@ class App {
   }
 
   start() {
-    const { PORT, SERVER_HOST } = this.config;
+    const { PORT, HOST } = this.config;
 
-    this.appServer.listen(PORT, SERVER_HOST);
+    this.appServer.listen(PORT, HOST);
   }
 
   stop() {

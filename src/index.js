@@ -15,7 +15,7 @@ export default (config) => {
     })
     .setErrorHandler((err, req, res) => {
       server.log.error(err.message);
-      if (!IS_TEST_ENV) rollbar.errorHandler()(err, req, res);
+      if (IS_TEST_ENV) rollbar.errorHandler()(err, req, res);
       res.send(err);
     });
 };

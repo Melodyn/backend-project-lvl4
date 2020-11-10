@@ -5,7 +5,7 @@ export const validateConfig = (config) => {
 
   const schema = yup.object().shape({
     NODE_ENV: yup.string().oneOf(['test', 'local', 'production']).required(),
-    SERVER_HOST: yup.string().required(),
+    HOST: yup.string().required(),
     PORT: yup.number().required(),
     ROLLBAR_PSI_TOKEN: yup.string().required(),
     IS_TEST_ENV: yup.boolean().when('NODE_ENV', checkEnv('test')),
