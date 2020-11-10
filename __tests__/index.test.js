@@ -8,10 +8,6 @@ beforeAll(() => {
   app = new App(config);
 });
 
-afterAll(() => {
-  app.stop();
-});
-
 test('Check get', async () => {
   const response = await app.server.inject({
     method: 'GET',
