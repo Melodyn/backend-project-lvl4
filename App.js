@@ -1,8 +1,9 @@
 import createServer from './src/index.js';
+import { validateConfig } from './src/utils.js';
 
 class App {
   constructor(config) {
-    this.config = config;
+    this.config = validateConfig(config);
     this.appServer = createServer(config);
   }
 
@@ -13,9 +14,7 @@ class App {
   start() {
     const { PORT, HOST } = this.config;
 
-    this.appServer.listen(PORT, HOST, () => {
-      console.log(`Server running on http://${HOST}:${PORT}`);
-    });
+    this.appServer.listen(Number(PORT), HOST);
   }
 
   stop() {

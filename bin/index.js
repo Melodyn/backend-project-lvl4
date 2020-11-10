@@ -1,13 +1,9 @@
 #!/usr/bin/env node
 
-import dotenv from 'dotenv';
-import App from '../index.js';
+import createApp from '../index.js';
 
 try {
-  const config = process.env.NODE_ENV === 'production'
-    ? process.env
-    : dotenv.config().parsed;
-  const app = new App(config);
+  const app = createApp(process.env.NODE_ENV);
   app.start();
 } catch (err) {
   console.error(err);

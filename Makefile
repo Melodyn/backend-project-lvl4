@@ -6,15 +6,15 @@ dependency:
 install:
 	chmod +x ./bin/index.js
 run:
-	./bin/index.js
+	NODE_ENV=local ./bin/index.js
 
 # dev
 lint:
 	npx eslint .
 test:
-	npm test -s
+	NODE_ENV=test npm test -s
 test_dev:
-	npm test -s -- --watchAll
+	NODE_ENV=test npm test -s -- --watchAll
 test_coverage:
-	npm test -s -- --coverage
+	NODE_ENV=test npm test -s -- --coverage
 

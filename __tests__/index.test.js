@@ -1,11 +1,13 @@
-import dotenv from 'dotenv';
-import App from '../index.js';
+import createApp from '../index.js';
 
 let app;
 
 beforeAll(() => {
-  const { parsed: config } = dotenv.config({ path: 'test.env' });
-  app = new App(config);
+  app = createApp(process.env.NODE_ENV);
+});
+
+afterAll(() => {
+  if (app) app.stop();
 });
 
 test('Check get', async () => {

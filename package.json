@@ -29,7 +29,8 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "fastify": "^3.7.0",
-    "rollbar": "^2.19.4"
+    "rollbar": "^2.19.4",
+    "yup": "^0.29.3"
   },
   "devDependencies": {
     "eslint": "^7.13.0",
