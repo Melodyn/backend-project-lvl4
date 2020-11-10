@@ -38,5 +38,5 @@ jobs:
           branch: main
         env:
           NODE_ENV: production
-          HOST: 0.0.0.0
+          SERVER_HOST: 0.0.0.0
           ROLLBAR_PSI_TOKEN: ${{ secrets.ROLLBAR_PSI_TOKEN }}
