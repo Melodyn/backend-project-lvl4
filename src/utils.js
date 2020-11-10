@@ -14,7 +14,9 @@ export const validateConfig = (config) => {
   });
 
   try {
-    return schema.validateSync(config, { abortEarly: false });
+    const { ROLLBAR_PSI_TOKEN, ...other } = schema.validateSync(config, { abortEarly: false });
+    console.log('Full config:', other);
+    return { ROLLBAR_PSI_TOKEN, ...other };
   } catch (err) {
     const errorsString = ['Config validation error:', ...err.errors].join('\n');
     throw new Error(errorsString);
