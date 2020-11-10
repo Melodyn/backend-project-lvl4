@@ -3,7 +3,7 @@ import createServer from './src/index.js';
 class App {
   constructor(config) {
     this.config = config;
-    this.appServer = createServer();
+    this.appServer = createServer(config);
   }
 
   get server() {
