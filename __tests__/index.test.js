@@ -13,7 +13,7 @@ afterAll(() => {
 test('Check get', async () => {
   const response = await app.server.inject({
     method: 'GET',
-    url: '/?name=World',
+    url: '/api?name=World',
   });
 
   expect(response.statusCode).toEqual(200);

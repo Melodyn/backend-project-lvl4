@@ -6,7 +6,7 @@ dependency:
 install:
 	chmod +x ./bin/index.js
 run:
-	NODE_ENV=local ./bin/index.js
+	NODE_ENV=development ./bin/index.js
 
 # dev
 lint:

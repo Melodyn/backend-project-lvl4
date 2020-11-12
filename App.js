@@ -1,8 +1,9 @@
 import createServer from './src/index.js';
+import loadConfig from './src/utils/configLoader.js';
 
 class App {
   constructor(config) {
-    this.config = config;
+    this.config = loadConfig(config);
     this.appServer = createServer(config);
   }
 
