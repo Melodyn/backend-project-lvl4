@@ -1,4 +1,4 @@
-import createApp from '../index.js';
+import createApp from '../server/index.js';
 
 let app;
 

@@ -18,6 +18,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: make dependency
     - run: make lint
+    - run: make build
     - name: Test & publish code coverage
       uses: paambaati/codeclimate-action@v2.6.0
       env:
@@ -39,4 +40,5 @@ jobs:
         env:
           HD_NODE_ENV: production
           HD_HOST: 0.0.0.0
+          HD_LOG_LEVEL: info
           HD_ROLLBAR_PSI_TOKEN: ${{ secrets.ROLLBAR_PSI_TOKEN }}

@@ -3,12 +3,18 @@ start: run
 setup: dependency install
 dependency:
 	npm ci
-install:
-	chmod +x ./bin/index.js
+build:
+	npm run build
+
+# local run
+run-heroku:
+	NODE_ENV=development heroku local web
 run:
 	NODE_ENV=development ./bin/index.js
 
 # dev
+install:
+	chmod +x ./bin/index.js
 lint:
 	npx eslint .
 test:

@@ -5,9 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "jest --colors --detectOpenHandles",
     "start": "./bin/index.js",
-    "build": "webpack --config webpack.config.cjs"
+    "build": "webpack --config webpack.config.cjs",
+    "test": "jest --colors --detectOpenHandles"
   },
   "bin": {
     "task-manager": "./bin/index.js"
@@ -36,11 +36,14 @@
     "yup": "^0.29.3"
   },
   "devDependencies": {
+    "css-loader": "^5.0.1",
     "eslint": "^7.13.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest": "^24.1.0",
     "jest": "^26.6.3",
+    "pino-pretty": "^4.3.0",
+    "style-loader": "^2.0.0",
     "webpack": "^5.4.0",
     "webpack-cli": "^4.2.0"
   }

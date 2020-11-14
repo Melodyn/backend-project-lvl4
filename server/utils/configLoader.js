@@ -19,6 +19,7 @@ const configSchema = yup.object().shape({
   NODE_ENV: yup.string().oneOf(Object.values(envs)).required(),
   HOST: yup.string().required(),
   PORT: yup.number().required(),
+  LOG_LEVEL: yup.string().required(),
   ROLLBAR_PSI_TOKEN: yup.string().required(),
   IS_TEST_ENV: yup.boolean().when('NODE_ENV', checkEnv(envs.test)),
   IS_DEV_ENV: yup.boolean().when('NODE_ENV', checkEnv(envs.dev)),

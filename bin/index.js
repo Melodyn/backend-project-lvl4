@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import createApp from '../index.js';
+import createApp from '../server/index.js';
 
 try {
   const app = createApp(process.env.NODE_ENV);
