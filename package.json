@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "./bin/index.js",
+    "heroku-postbuild": "webpack -p",
     "build": "webpack --config webpack.config.cjs",
     "test": "jest --colors --detectOpenHandles"
   },
