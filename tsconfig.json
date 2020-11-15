@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "allowJs": true,
+    "checkJs": true,
+    "moduleResolution": "Node",
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "types": [
+      "node",
+      "jest",
+      "yup"
+    ]
+  },
+  "include": [
+    "."
+  ],
+  "exclude": [
+    "./node_modules",
+    "./dist",
+    "./__tests__"
+  ]
+}

@@ -1,3 +1,5 @@
+// @ts-check
+
 import path from 'path';
 import fastify from 'fastify';
 import fastifyStatic from 'fastify-static';
@@ -5,9 +7,9 @@ import Rollbar from 'rollbar';
 import loadConfig from './utils/configLoader.js';
 
 class App {
-  constructor(config) {
-    this.config = loadConfig(config);
-    this.setServer();
+  constructor(envName) {
+    this.config = loadConfig(envName);
+    this.appServer = this.initServer();
     this.setStatic();
     this.setRoutes();
     this.setRollbar();
@@ -27,8 +29,8 @@ class App {
     this.appServer.close();
   }
 
-  setServer() {
-    this.appServer = fastify({
+  initServer() {
+    return fastify({
       logger: {
         prettyPrint: this.config.IS_DEV_ENV,
         level: this.config.LOG_LEVEL,
@@ -56,15 +58,13 @@ class App {
   }
 
   setRollbar() {
-    const { ROLLBAR_PSI_TOKEN, IS_TEST_ENV } = this.config;
     const rollbar = new Rollbar({
-      enabled: !IS_TEST_ENV,
-      accessToken: ROLLBAR_PSI_TOKEN,
+      enabled: !this.config.IS_TEST_ENV,
+      accessToken: this.config.ROLLBAR_PSI_TOKEN,
     });
 
     this.server.setErrorHandler((err, req, res) => {
-      rollbar.errorHandler()(err, req, res);
-      res.send(err);
+      rollbar.errorHandler()(err, req, res, (error) => res.send(error));
     });
   }
 }
