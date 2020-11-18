@@ -33,7 +33,11 @@
     "dotenv": "^8.2.0",
     "fastify": "^3.7.0",
     "fastify-static": "^3.3.0",
+    "knex": "^0.21.12",
+    "objection": "^2.2.3",
+    "pg": "^8.5.1",
     "rollbar": "^2.19.4",
+    "sqlite3": "^5.0.0",
     "yup": "^0.29.3"
   },
   "devDependencies": {
@@ -45,6 +49,7 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest": "^24.1.0",
     "jest": "^26.6.3",
+    "nodemon": "^2.0.6",
     "pino-pretty": "^4.3.0",
     "style-loader": "^2.0.0",
     "webpack": "^5.4.0",

@@ -19,13 +19,18 @@ const configByEnv = {
 const checkEnv = (expected) => (current, schema) => schema.default(current === expected);
 const configSchema = yup.object({
   NODE_ENV: yup.string().oneOf(Object.values(envs)).required(),
-  HOST: yup.string().required(),
-  PORT: yup.number().required(),
-  LOG_LEVEL: yup.string().required(),
-  ROLLBAR_PSI_TOKEN: yup.string().required(),
   IS_TEST_ENV: yup.boolean().when('NODE_ENV', checkEnv(envs.test)).required(),
   IS_DEV_ENV: yup.boolean().when('NODE_ENV', checkEnv(envs.dev)).required(),
   IS_PROD_ENV: yup.boolean().when('NODE_ENV', checkEnv(envs.prod)).required(),
+  LOG_LEVEL: yup.string().required(),
+  ROLLBAR_PSI_TOKEN: yup.string().required(),
+  HOST: yup.string().required(),
+  PORT: yup.number().required(),
+  DB_TYPE: yup.string().required(),
+  DB_HOST: yup.string().required(),
+  DB_USER: yup.string().required(),
+  DB_PASS: yup.string().required(),
+  DB_NAME: yup.string().required(),
 }).required();
 
 export default (envName) => {

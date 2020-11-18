@@ -4,29 +4,28 @@ import path from 'path';
 import fastify from 'fastify';
 import fastifyStatic from 'fastify-static';
 import Rollbar from 'rollbar';
+import knex from 'knex';
+import User from '../models/User.js';
 import loadConfig from './utils/configLoader.js';
 
 class App {
   constructor(envName) {
     this.config = loadConfig(envName);
-    this.appServer = this.initServer();
+    this.server = this.initServer();
     this.setStatic();
     this.setRoutes();
     this.setRollbar();
-  }
-
-  get server() {
-    return this.appServer;
+    this.database = this.setDatabase();
   }
 
   start() {
     const { PORT, HOST } = this.config;
 
-    this.appServer.listen(PORT, HOST);
+    this.server.listen(PORT, HOST);
   }
 
   stop() {
-    this.appServer.close();
+    this.server.close();
   }
 
   initServer() {
@@ -53,8 +52,17 @@ class App {
         const { name } = req.query;
         if (!name) throw new Error('AaaaaaaaaaaAAAAaAAaAAaAaAAA!!!!1!!!1!!!!!!!!!!!1111');
         if (name === 'Kitty') throw new Error('I need a pussy, not kitty!');
-        res.send(`Hello, ${name}!`);
-      });
+        return `Hello, ${name}!`;
+      })
+      .get('/users/insert', (req, res) => {
+        const {
+          email, password, firstName, lastName,
+        } = req.query;
+        return this.database.User.query().insert({
+          email, password, firstName, lastName,
+        });
+      })
+      .get('/users', (req, res) => this.database.User.query());
   }
 
   setRollbar() {
@@ -66,6 +74,33 @@ class App {
     this.server.setErrorHandler((err, req, res) => {
       rollbar.errorHandler()(err, req, res, (error) => res.send(error));
     });
+  }
+
+  setDatabase() {
+    const {
+      DB_TYPE, DB_NAME, DB_USER, DB_PASS, DB_HOST,
+    } = this.config;
+
+    const databaseConnectionsByClient = {
+      sqlite3: {
+        filename: DB_NAME,
+      },
+      pg: {
+        host: DB_HOST,
+        user: DB_USER,
+        password: DB_PASS,
+        database: DB_NAME,
+      },
+    };
+
+    const db = knex({
+      client: DB_TYPE,
+      connection: databaseConnectionsByClient[DB_TYPE],
+      useNullAsDefault: true,
+    });
+    User.knex(db);
+
+    return { User };
   }
 }
 
