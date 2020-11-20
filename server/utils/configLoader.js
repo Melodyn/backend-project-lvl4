@@ -1,5 +1,3 @@
-// @ts-check
-
 import dotenv from 'dotenv';
 import yup from 'yup';
 

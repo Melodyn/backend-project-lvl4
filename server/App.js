@@ -1,11 +1,9 @@
-// @ts-check
-
 import path from 'path';
 import fastify from 'fastify';
 import fastifyStatic from 'fastify-static';
 import Rollbar from 'rollbar';
 import knex from 'knex';
-import User from '../models/User.js';
+import User, { userValidator } from '../models/User.js';
 import loadConfig from './utils/configLoader.js';
 
 class App {
@@ -55,12 +53,8 @@ class App {
         return `Hello, ${name}!`;
       })
       .get('/users/insert', (req, res) => {
-        const {
-          email, password, firstName, lastName,
-        } = req.query;
-        return this.database.User.query().insert({
-          email, password, firstName, lastName,
-        });
+        const data = userValidator.validateSync(req.query);
+        return this.database.User.query().insert(data);
       })
       .get('/users', (req, res) => this.database.User.query());
   }
