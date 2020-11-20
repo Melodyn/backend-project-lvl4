@@ -15,11 +15,12 @@ const configByEnv = {
 };
 
 const checkEnv = (expected) => (current, schema) => schema.default(current === expected);
-const configSchema = yup.object({
+export const configSchema = yup.object({
   NODE_ENV: yup.string().oneOf(Object.values(envs)).required(),
   IS_TEST_ENV: yup.boolean().when('NODE_ENV', checkEnv(envs.test)).required(),
   IS_DEV_ENV: yup.boolean().when('NODE_ENV', checkEnv(envs.dev)).required(),
   IS_PROD_ENV: yup.boolean().when('NODE_ENV', checkEnv(envs.prod)).required(),
+  STATIC_DIR: yup.string().required(),
   LOG_LEVEL: yup.string().required(),
   ROLLBAR_PSI_TOKEN: yup.string().required(),
   HOST: yup.string().required(),
@@ -31,7 +32,7 @@ const configSchema = yup.object({
   DB_NAME: yup.string().required(),
 }).required();
 
-export default (envName) => {
+export const loadConfig = (envName) => {
   try {
     return configSchema.validateSync(configByEnv[envName], { abortEarly: false });
   } catch (err) {
