@@ -1,9 +1,16 @@
+import crypto from 'crypto';
 import yup from 'yup';
 import { Model } from 'objection';
 
-export default class User extends Model {
+export class User extends Model {
   static get tableName() {
     return 'users';
+  }
+
+  static beforeInsert(queryContext) {
+    queryContext.inputItems.forEach((item) => {
+      item.password = crypto.createHash('sha256').update(item.password).digest('hex');
+    });
   }
 }
 

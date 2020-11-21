@@ -8,7 +8,7 @@
     "start": "./bin/index.js",
     "heroku-postbuild": "npm run build",
     "build": "webpack --config webpack.config.cjs",
-    "test": "jest --colors --detectOpenHandles"
+    "test": "rm -rf task_manager.test.sqlite && jest --colors --detectOpenHandles"
   },
   "bin": {
     "task-manager": "./bin/index.js"

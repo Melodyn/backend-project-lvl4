@@ -4,6 +4,7 @@ import fastifyStatic from 'fastify-static';
 import Rollbar from 'rollbar';
 import knex from 'knex';
 import models from '../models/index.js';
+import routeGroups from '../routes/index.js';
 import { loadConfig, configSchema } from './utils/configLoader.js';
 
 /**
@@ -43,7 +44,6 @@ const initDatabase = (config) => {
     client: DB_TYPE,
     connection: databaseConnectionsByClient[DB_TYPE],
     useNullAsDefault: true,
-    debug: true,
     migrations: {
       tableName: 'migrations',
     },
@@ -75,6 +75,13 @@ const setStatic = (staticDir, server) => {
 };
 
 /**
+ * @param {FastifyInstance} server
+ */
+const setRoutes = (server) => {
+  routeGroups.forEach((routes) => routes.forEach((route) => server.route(route)));
+};
+
+/**
  * @param {Config} config
  * @param {FastifyInstance} server
  */
@@ -100,18 +107,28 @@ const app = async (envName) => {
   const server = initServer(config);
 
   setStatic(config.STATIC_DIR, server);
+  setRoutes(server);
   setRollbar(config, server);
 
   await database.migrate.latest();
   await server.listen(config.PORT, config.HOST);
 
-  process.on('SIGTERM', async () => {
-    console.log('Stop app');
+  const stop = async () => {
+    server.log.info('Stop app', config);
     await database.destroy();
     await server.close();
-    console.log('App stopped');
-    process.exit(0);
-  });
+    server.log.info('App stopped');
+    if (!config.IS_TEST_ENV) {
+      process.exit(0);
+    }
+  };
+
+  process.on('SIGTERM', stop);
+
+  return {
+    server,
+    stop,
+  };
 };
 
 export default app;
