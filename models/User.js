@@ -1,6 +1,8 @@
 import crypto from 'crypto';
 import yup from 'yup';
-import { Model } from 'objection';
+import objection from 'objection';
+
+const { Model } = objection;
 
 export class User extends Model {
   static get tableName() {

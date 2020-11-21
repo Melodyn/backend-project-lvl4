@@ -27,3 +27,9 @@ migrations_up:
 	DB_TYPE=sqlite3 DB_NAME=task_manager.sqlite npx knex --esm migrate:up
 migrations_down:
 	DB_TYPE=sqlite3 DB_NAME=task_manager.sqlite npx knex --esm migrate:down
+
+postgres:
+	docker rm postgres || true
+	docker run --rm --name postgres -it -p 5432:5432 \
+		-e POSTGRES_USER=admin -e POSTGRES_PASSWORD=password -e POSTGRES_DB=task_manager \
+		-d postgres:12 || true

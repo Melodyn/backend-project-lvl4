@@ -25,7 +25,7 @@ import { loadConfig, configSchema } from './utils/configLoader.js';
  */
 const initDatabase = (config) => {
   const {
-    DB_TYPE, DB_NAME, DB_USER, DB_PASS, DB_HOST,
+    DB_TYPE, DB_NAME, DB_USER, DB_PASS, DB_HOST, DB_PORT,
   } = config;
 
   const databaseConnectionsByClient = {
@@ -37,6 +37,7 @@ const initDatabase = (config) => {
       user: DB_USER,
       password: DB_PASS,
       database: DB_NAME,
+      port: DB_PORT,
     },
   };
 

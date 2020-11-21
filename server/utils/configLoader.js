@@ -27,6 +27,7 @@ export const configSchema = yup.object({
   PORT: yup.number().required(),
   DB_TYPE: yup.string().required(),
   DB_HOST: yup.string().required(),
+  DB_PORT: yup.number().required(),
   DB_USER: yup.string().required(),
   DB_PASS: yup.string().required(),
   DB_NAME: yup.string().required(),

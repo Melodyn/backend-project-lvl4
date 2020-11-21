@@ -43,7 +43,9 @@ jobs:
           HD_LOG_LEVEL: info
           HD_ROLLBAR_PSI_TOKEN: ${{ secrets.ROLLBAR_PSI_TOKEN }}
           HD_STATIC_DIR: dist
-          HD_DB_TYPE: sqlite3
-          HD_DB_USER: admin
-          HD_DB_PASS: password
-          HD_DB_NAME: task_manager.sqlite
+          HD_DB_TYPE: pg
+          HD_DB_HOST: ${{ secrets.DB_HOST }}
+          HD_DB_USER: ${{ secrets.DB_USER }}
+          HD_DB_PASS: ${{ secrets.DB_PASS }}
+          HD_DB_NAME: ${{ secrets.DB_NAME }}
+          HD_DB_PORT: 5432
