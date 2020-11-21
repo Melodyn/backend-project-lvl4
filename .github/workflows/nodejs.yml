@@ -42,3 +42,8 @@ jobs:
           HD_HOST: 0.0.0.0
           HD_LOG_LEVEL: info
           HD_ROLLBAR_PSI_TOKEN: ${{ secrets.ROLLBAR_PSI_TOKEN }}
+          HD_STATIC_DIR: dist
+          HD_DB_TYPE: sqlite3
+          HD_DB_USER: admin
+          HD_DB_PASS: password
+          HD_DB_NAME: task_manager.sqlite
