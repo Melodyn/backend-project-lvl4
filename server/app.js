@@ -93,6 +93,7 @@ const setRollbar = (config, server) => {
   });
 
   server.setErrorHandler((err, req, res) => {
+    server.log.debug(err);
     rollbar.errorHandler()(err, req, res, (error) => res.send(error));
   });
 };

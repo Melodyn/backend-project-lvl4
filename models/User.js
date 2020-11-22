@@ -11,14 +11,26 @@ export class User extends Model {
 
   static beforeInsert(queryContext) {
     queryContext.inputItems.forEach((item) => {
-      item.password = crypto.createHash('sha256').update(item.password).digest('hex');
+      item.password = this.hashPassword(item.password);
     });
+  }
+
+  static beforeUpdate(queryContext) {
+    queryContext.inputItems.forEach((item) => {
+      item.password = this.hashPassword(item.password);
+    });
+  }
+
+  static hashPassword(password) {
+    return crypto.createHash('sha256').update(password).digest('hex');
   }
 }
 
-export const userValidator = yup.object({
+export const userFields = {
   firstName: yup.string().required(),
   lastName: yup.string().required(),
   password: yup.string().required(),
   email: yup.string().email().required(),
-}).required();
+};
+
+export const userValidator = yup.object(userFields).required();

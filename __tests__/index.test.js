@@ -44,10 +44,41 @@ test('POST', async () => {
   passHash = password;
 });
 
+test('Login', async () => {
+  const response = await app.server.inject({
+    method: 'POST',
+    url: '/login',
+    payload: {
+      ...user,
+      password: 'password',
+    },
+  });
+
+  expect(response.statusCode).toEqual(200);
+  expect(response.body).toEqual(passHash);
+});
+
+test('Login fail', async () => {
+  const response = await app.server.inject({
+    method: 'POST',
+    url: '/login',
+    payload: {
+      ...user,
+      password: 'notPassword',
+    },
+  });
+
+  expect(response.statusCode).toEqual(401);
+  expect(response.body).toEqual('Incorrect password');
+});
+
 test('PATCH', async () => {
   const response = await app.server.inject({
     method: 'PATCH',
     url: '/users/1',
+    headers: {
+      authorization: passHash,
+    },
     payload: {
       ...user,
       password: 'newPassword',
@@ -67,4 +98,35 @@ test('GET 2', async () => {
   const [{ id, password, ...createdUser }] = JSON.parse(response.body);
   expect(createdUser).toEqual(user);
   expect(password).not.toEqual(passHash);
+  passHash = password;
+});
+
+test('new user', async () => {
+  const response = await app.server.inject({
+    method: 'POST',
+    url: '/users',
+    payload: {
+      ...user,
+      email: 'new@email.com',
+      password: 'newPassword',
+    },
+  });
+
+  expect(response.statusCode).toEqual(200);
+});
+
+test('PATCH another user', async () => {
+  const response = await app.server.inject({
+    method: 'PATCH',
+    url: '/users/2',
+    headers: {
+      authorization: passHash,
+    },
+    payload: {
+      ...user,
+      password: 'newPassword',
+    },
+  });
+
+  expect(response.statusCode).not.toEqual(200);
 });
