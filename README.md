@@ -14,10 +14,12 @@
 
 Setup:
 ```sh
-make setup # first install
+make setup # при первой установке
 ```
+
+После установки зависимостей и прав на исполняемый файл, будет создан `development.env`, где можно указать собственный `ROLLBAR_PSI_TOKEN`.
 
 Run:
 ```sh
-make # or `make start`
+make # или `make start`
 ```

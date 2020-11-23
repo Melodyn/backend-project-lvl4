@@ -1,10 +1,12 @@
 # usage
 start: run
-setup: dependency install
+setup: dependency install create-config
 dependency:
 	npm ci
 build:
 	npm run build
+create-config:
+	cp -n development.env.example development.env || true
 
 # local run
 run-heroku:
