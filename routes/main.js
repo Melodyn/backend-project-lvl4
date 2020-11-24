@@ -19,7 +19,7 @@ const routes = [
 
       if (!user) {
         res.code(constants.HTTP_STATUS_UNAUTHORIZED)
-          .send(`Not found user with email "${email}"`);
+          .send(`Not found user with email '${email}'`);
         return;
       }
       if (user.password !== User.hashPassword(password)) {
@@ -27,7 +27,14 @@ const routes = [
           .send('Incorrect password');
         return;
       }
-      res.send(user.password);
+      res
+        .setCookie('token', user.password, {
+          path: '/',
+        })
+        .setCookie('id', user.id, {
+          path: '/',
+        })
+        .send(user.password);
     },
   },
   {

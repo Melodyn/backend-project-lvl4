@@ -1,11 +1,15 @@
 import path from 'path';
 import fastify from 'fastify';
 import fastifyStatic from 'fastify-static';
+import fastifyCookie from 'fastify-cookie';
+import fastifyAuth from 'fastify-auth';
 import Rollbar from 'rollbar';
 import knex from 'knex';
+import yup from 'yup';
 import models from '../models/index.js';
 import routeGroups from '../routes/index.js';
 import { loadConfig, configSchema } from './utils/configLoader.js';
+import { User } from '../models/User.js';
 
 /**
  * @typedef { ReturnType<typeof configSchema.validateSync> } Config
@@ -76,6 +80,48 @@ const setStatic = (staticDir, server) => {
 };
 
 /**
+ * @param {string} secret
+ * @param {FastifyInstance} server
+ */
+const setAuth = (secret, server) => {
+  server.decorateRequest('auth', {
+    isAuthorized: false,
+    user: {},
+  });
+  server.register(fastifyCookie, {
+    secret,
+  });
+  server.register(fastifyAuth)
+    .after(() => {
+      server.addHook('preHandler', server.auth([
+        (req) => {
+          const { id, token } = yup.object({
+            id: yup.number().default(0).optional(),
+            token: yup.string().default('').optional(),
+          }).required().validateSync(req.cookies);
+
+          if (token === '') return Promise.resolve('ok');
+
+          return User.query().findById(id)
+            .then((user) => {
+              if (!user) {
+                throw new Error(`Not found user with id "${id}"`);
+              }
+              if (user.password !== token) {
+                throw new Error('Incorrect password');
+              }
+
+              req.auth = {
+                isAuthorized: true,
+                user,
+              };
+            });
+        },
+      ]));
+    });
+};
+
+/**
  * @param {FastifyInstance} server
  */
 const setRoutes = (server) => {
@@ -109,6 +155,7 @@ const app = async (envName) => {
   const server = initServer(config);
 
   setStatic(config.STATIC_DIR, server);
+  setAuth(config.NODE_ENV, server);
   setRoutes(server);
   setRollbar(config, server);
 
