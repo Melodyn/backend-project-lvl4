@@ -33,4 +33,4 @@ export const userFields = {
   email: yup.string().email().required(),
 };
 
-export const userValidator = yup.object(userFields).required();
+export const userValidator = yup.object(userFields).unknown(false).required();

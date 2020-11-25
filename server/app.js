@@ -1,11 +1,12 @@
 import path from 'path';
+import { constants } from 'http2';
 import fastify from 'fastify';
 import fastifyStatic from 'fastify-static';
 import fastifyCookie from 'fastify-cookie';
 import fastifyAuth from 'fastify-auth';
 import Rollbar from 'rollbar';
 import knex from 'knex';
-import yup from 'yup';
+import yup, { ValidationError } from 'yup';
 import models from '../models/index.js';
 import routeGroups from '../routes/index.js';
 import { loadConfig, configSchema } from './utils/configLoader.js';
@@ -95,6 +96,7 @@ const setAuth = (secret, server) => {
     .after(() => {
       server.addHook('preHandler', server.auth([
         (req) => {
+          req.log.debug('Request cookies', req.cookies);
           const { id, token } = yup.object({
             id: yup.number().default(0).optional(),
             token: yup.string().default('').optional(),
@@ -140,7 +142,13 @@ const setRollbar = (config, server) => {
 
   server.setErrorHandler((err, req, res) => {
     server.log.debug(err);
-    rollbar.errorHandler()(err, req, res, (error) => res.send(error));
+    rollbar.errorHandler()(err, req, res, (error) => {
+      if (error instanceof ValidationError) {
+        res.code(constants.HTTP_STATUS_BAD_REQUEST).send(error.errors.join('\n'));
+        return;
+      }
+      res.code(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send(error.message);
+    });
   });
 };
 
