@@ -6,7 +6,6 @@
   "type": "module",
   "scripts": {
     "start": "./bin/index.js",
-    "heroku-postbuild": "npm run build",
     "build": "webpack --config webpack.config.cjs",
     "test": "jest --colors --detectOpenHandles"
   },
@@ -38,6 +37,8 @@
     "knex": "^0.21.12",
     "objection": "^2.2.3",
     "pg": "^8.5.1",
+    "point-of-view": "^4.7.0",
+    "pug": "^3.0.0",
     "rollbar": "^2.19.4",
     "sqlite3": "^5.0.0",
     "yup": "^0.29.3"

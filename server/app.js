@@ -1,6 +1,8 @@
 import path from 'path';
 import { constants } from 'http2';
 import fastify from 'fastify';
+import pug from 'pug';
+import pointOfView from 'point-of-view';
 import fastifyStatic from 'fastify-static';
 import fastifyCookie from 'fastify-cookie';
 import fastifyAuth from 'fastify-auth';
@@ -77,6 +79,11 @@ const initServer = (config) => fastify({
 const setStatic = (staticDir, server) => {
   server.register(fastifyStatic, {
     root: path.resolve(staticDir),
+  });
+  server.register(pointOfView, {
+    engine: {
+      pug,
+    },
   });
 };
 

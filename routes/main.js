@@ -41,7 +41,7 @@ const routes = [
     method: 'GET',
     url: '/',
     handler: (req, res) => {
-      res.sendFile('index.html');
+      res.view('/src/index.pug');
     },
   },
 ];
