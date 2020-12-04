@@ -8,11 +8,13 @@ import fastifyCookie from 'fastify-cookie';
 import fastifyAuth from 'fastify-auth';
 import Rollbar from 'rollbar';
 import knex from 'knex';
+import i18n from 'i18n';
 import yup, { ValidationError } from 'yup';
+// app
 import models from '../models/index.js';
+import { User } from '../models/User.js';
 import routeGroups from '../routes/index.js';
 import { loadConfig, configSchema } from './utils/configLoader.js';
-import { User } from '../models/User.js';
 
 /**
  * @typedef { ReturnType<typeof configSchema.validateSync> } Config
@@ -71,6 +73,14 @@ const initServer = (config) => fastify({
     level: config.LOG_LEVEL,
   },
 });
+
+const setInternalization = () => {
+  i18n.configure({
+    locales: ['ru'],
+    directory: 'locales',
+    register: global,
+  });
+};
 
 /**
  * @param {string} staticDir
@@ -169,6 +179,7 @@ const app = async (envName) => {
   const database = initDatabase(config);
   const server = initServer(config);
 
+  setInternalization();
   setStatic(config.STATIC_DIR, server);
   setAuth(config.NODE_ENV, server);
   setRoutes(server);

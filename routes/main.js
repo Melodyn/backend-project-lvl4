@@ -1,5 +1,6 @@
 import yup from 'yup';
 import { constants } from 'http2';
+import i18n from 'i18n';
 import { User, userFields } from '../models/User.js';
 
 /**

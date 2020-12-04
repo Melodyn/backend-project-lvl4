@@ -12,7 +12,7 @@ create-config:
 run-heroku:
 	NODE_ENV=development heroku local web
 run:
-	NODE_ENV=development nodemon ./bin/index.js
+	DEBUG=i18n:* NODE_ENV=development nodemon ./bin/index.js
 
 # dev
 install:
