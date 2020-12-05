@@ -1,6 +1,6 @@
 import yup from 'yup';
 import { constants } from 'http2';
-import i18n from 'i18n';
+import i18next from 'i18next';
 import { User, userFields } from '../models/User.js';
 
 /**
@@ -42,7 +42,7 @@ const routes = [
     method: 'GET',
     url: '/',
     handler: (req, res) => {
-      res.view('/src/index.pug');
+      res.view('index');
     },
   },
 ];

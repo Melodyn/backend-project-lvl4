@@ -8,9 +8,10 @@ import fastifyCookie from 'fastify-cookie';
 import fastifyAuth from 'fastify-auth';
 import Rollbar from 'rollbar';
 import knex from 'knex';
-import i18n from 'i18n';
+import i18next from 'i18next';
 import yup, { ValidationError } from 'yup';
 // app
+import ru from '../locales/ru.js';
 import models from '../models/index.js';
 import { User } from '../models/User.js';
 import routeGroups from '../routes/index.js';
@@ -74,13 +75,13 @@ const initServer = (config) => fastify({
   },
 });
 
-const setInternalization = () => {
-  i18n.configure({
-    locales: ['ru'],
-    directory: 'locales',
-    register: global,
-  });
-};
+const setInternalization = (config) => i18next.init({
+  lng: 'ru',
+  debug: config.IS_DEV_ENV,
+  resources: {
+    ru,
+  },
+});
 
 /**
  * @param {string} staticDir
@@ -94,6 +95,11 @@ const setStatic = (staticDir, server) => {
     engine: {
       pug,
     },
+    defaultContext: {
+      t: i18next.t.bind(i18next),
+    },
+    includeViewExtension: true,
+    templates: path.resolve(staticDir),
   });
 };
 
@@ -179,7 +185,7 @@ const app = async (envName) => {
   const database = initDatabase(config);
   const server = initServer(config);
 
-  setInternalization();
+  await setInternalization(config);
   setStatic(config.STATIC_DIR, server);
   setAuth(config.NODE_ENV, server);
   setRoutes(server);
