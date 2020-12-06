@@ -11,7 +11,10 @@ const routes = [
   {
     method: 'GET',
     url: '/users',
-    handler: (req) => User.query().where(req.query),
+    handler: async (req, res) => {
+      const users = await User.query().where(req.query);
+      res.view('users', { users, path: 'users' });
+    },
   },
   {
     method: 'POST',

@@ -99,7 +99,7 @@ const setStatic = (staticDir, server) => {
       t: i18next.t.bind(i18next),
     },
     includeViewExtension: true,
-    templates: path.resolve(staticDir),
+    templates: path.resolve(staticDir, 'templates'),
   });
 };
 
@@ -198,7 +198,7 @@ const app = async (envName) => {
     server.log.info('Stop app', config);
     await database.destroy();
     await server.close();
-    server.log.info('App stopped');
+    console.info('App stopped');
     if (!config.IS_TEST_ENV) {
       process.exit(0);
     }

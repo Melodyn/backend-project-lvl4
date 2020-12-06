@@ -1,10 +1,12 @@
+- var setActive = (route) => (path === route) ? 'active' : '';
+
 doctype html
 
 html(lang='ru')
     head
         meta(charset='utf-8')
         meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
-        meta(name='description' content='')
+        meta(name='description' content= t('main.app.description'))
         meta(name='author' content='Mark Otto, Jacob Thornton, and Bootstrap contributors')
         meta(name='generator' content='Jekyll v4.1.1')
         title= t('main.app.name')
@@ -19,14 +21,11 @@ html(lang='ru')
     .cover-container.d-flex.w-100.h-100.p-3.mx-auto.flex-column
         header.masthead.mb-auto
             .inner
-                h3.masthead-brand= t('main.app.name')
+                a(href='/')
+                    h3.masthead-brand= t('main.app.shortName')
                 nav.nav.nav-masthead.justify-content-center
-                    a.nav-link(href='#')= t('main.nav.users')
-                    a.nav-link(href='#')= t('main.nav.signin')
-                    a.nav-link(href='#')= t('main.nav.signup')
-        main.inner.cover(role='main')
-            h1.cover-heading= t('main.app.name')
-            p.lead= t('main.app.description')
-            p.lead
-                a.btn.btn-lg.btn-secondary(href='#')= t('main.nav.signin')
+                    a.nav-link(class=setActive('users') href='users')= t('main.nav.users')
+                    a.nav-link(class=setActive('signin') href='session/new')= t('main.nav.signin')
+                    a.nav-link(class=setActive('signup') href='users/new')= t('main.nav.signup')
+        block content
         footer.mastfoot.mt-auto

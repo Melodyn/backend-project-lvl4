@@ -1,0 +1,19 @@
+extends layout
+
+block content
+    table.table.table-dark.table-striped.table-hover
+        tr
+            th= t('users.fields.id')
+            th= t('users.fields.fullName')
+            th= t('users.fields.email')
+            th
+        tbody
+        each user in users
+          tr
+            td #{user.id}
+            td #{user.firstName} #{user.lastName}
+            td #{user.email}
+            td
+                a(href=`users/${user.id}/edit`)= t('users.buttons.edit')
+                br
+                a(href=`users/${user.id}/delete`)= t('users.buttons.delete')

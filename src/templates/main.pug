@@ -1,0 +1,8 @@
+extends layout
+
+block content
+        main.inner.cover(role='main')
+            h1.cover-heading= t('main.app.name')
+            p.lead= t('main.app.description')
+            p.lead
+                a.btn.btn-lg.btn-secondary(href='#')= t('main.nav.signin')
