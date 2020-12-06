@@ -1,11 +1,14 @@
 import path from 'path';
 import { constants } from 'http2';
-import fastify from 'fastify';
-import pug from 'pug';
-import pointOfView from 'point-of-view';
+// fastify
+import fastifyFormbody from 'fastify-formbody';
 import fastifyStatic from 'fastify-static';
 import fastifyCookie from 'fastify-cookie';
 import fastifyAuth from 'fastify-auth';
+import fastify from 'fastify';
+// libs
+import pointOfView from 'point-of-view';
+import pug from 'pug';
 import Rollbar from 'rollbar';
 import knex from 'knex';
 import i18next from 'i18next';
@@ -88,6 +91,7 @@ const setInternalization = (config) => i18next.init({
  * @param {FastifyInstance} server
  */
 const setStatic = (staticDir, server) => {
+  server.register(fastifyFormbody);
   server.register(fastifyStatic, {
     root: path.resolve(staticDir),
   });
@@ -159,7 +163,7 @@ const setRoutes = (server) => {
  */
 const setRollbar = (config, server) => {
   const rollbar = new Rollbar({
-    enabled: !config.IS_TEST_ENV,
+    enabled: !config.IS_TEST_ENV && !config.IS_DEV_ENV,
     accessToken: config.ROLLBAR_PSI_TOKEN,
   });
 

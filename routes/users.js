@@ -17,6 +17,16 @@ const routes = [
     },
   },
   {
+    method: 'GET',
+    url: '/users/:id/edit',
+    handler: async (req, res) => {
+      const { firstName, lastName, email } = await User.query().findById(req.params.id);
+      res.view('signup', {
+        path: 'users', firstName, lastName, email,
+      });
+    },
+  },
+  {
     method: 'POST',
     url: '/users',
     handler: async (req, res) => {
@@ -35,6 +45,8 @@ const routes = [
               .send(err.message);
           }
         });
+
+      res.redirect('/');
     },
   },
   {

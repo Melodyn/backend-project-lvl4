@@ -2,7 +2,7 @@ extends layout
 
 block content
         main.inner.cover(role='main')
-            h1.cover-heading= t('main.app.name')
-            p.lead= t('main.app.description')
+            h1.cover-heading= t('app.name')
+            p.lead= t('app.description')
             p.lead
-                a.btn.btn-lg.btn-secondary(href='#')= t('main.nav.signin')
+                a.btn.btn-lg.btn-secondary(href='/session/new')= t('nav.signin')

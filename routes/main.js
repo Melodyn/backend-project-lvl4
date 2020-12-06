@@ -39,6 +39,20 @@ const routes = [
   },
   {
     method: 'GET',
+    url: '/session/new',
+    handler: (req, res) => {
+      res.view('signin', { path: 'signin' });
+    },
+  },
+  {
+    method: 'GET',
+    url: '/users/new',
+    handler: (req, res) => {
+      res.view('signup', { path: 'signup' });
+    },
+  },
+  {
+    method: 'GET',
     url: '/',
     handler: (req, res) => {
       res.view('main');

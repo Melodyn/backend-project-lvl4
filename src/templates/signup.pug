@@ -1,0 +1,17 @@
+extends layout
+
+block content
+    form(method='post' action='/users')
+        .form-group
+            label(for='firstName')= t('users.fields.firstName')
+            input#firstName.form-control(name='firstName' type='text' value=firstName required)
+        .form-group
+            label(for='lastName')= t('users.fields.lastName')
+            input#lastName.form-control(name='lastName' type='text' value=lastName required)
+        .form-group
+            label(for='email')= t('users.fields.email')
+            input#email.form-control(name='email' type='email' value=email required)
+        .form-group
+            label(for='password')= t('users.fields.password')
+            input#password.form-control(name='password' type='password' required)
+        button.btn.btn-primary= t('app.buttons.send')

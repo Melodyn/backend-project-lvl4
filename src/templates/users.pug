@@ -14,6 +14,6 @@ block content
             td #{user.firstName} #{user.lastName}
             td #{user.email}
             td
-                a(href=`users/${user.id}/edit`)= t('users.buttons.edit')
+                a(href=`/users/${user.id}/edit`)= t('users.buttons.edit')
                 br
-                a(href=`users/${user.id}/delete`)= t('users.buttons.delete')
+                a(href=`/users/${user.id}/delete`)= t('users.buttons.delete')
