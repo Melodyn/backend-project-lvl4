@@ -38,17 +38,44 @@ const routes = [
     },
   },
   {
+    method: 'POST',
+    url: '/session',
+    handler: async (req, res) => {
+      const { email: emailValidator, password: passwordValidator } = userFields;
+      const { data, errors = null } = await yup
+        .object({
+          data: yup
+            .object({ email: emailValidator, password: passwordValidator })
+            .required(),
+        })
+        .required()
+        .validate(req.body, { abortEarly: false })
+        .catch(({ inner }) => ({ errors: inner }));
+
+      if (errors !== null) {
+        req.auth.errors = errors
+          .reduce((acc, { path, message }) => ({ ...acc, [path]: message }), {});
+        return res.redirect('/session/new');
+      }
+
+      req.log.debug({ data, body: req.body });
+      return res.redirect('/');
+    },
+  },
+  {
     method: 'GET',
     url: '/session/new',
     handler: (req, res) => {
-      res.view('signin', { path: 'signin' });
+      res.view('signin', { path: 'signin', errors: req.auth.errors });
+      req.auth.errors = {};
     },
   },
   {
     method: 'GET',
     url: '/users/new',
     handler: (req, res) => {
-      res.view('signup', { path: 'signup' });
+      res.view('signup', { path: 'signup', errors: req.auth.errors });
+      req.auth.errors = {};
     },
   },
   {

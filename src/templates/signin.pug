@@ -4,8 +4,24 @@ block content
     form(method='post' action='/session')
         .form-group
             label(for='email')= t('users.fields.email')
-            input#email.form-control(name='email' type='email' required)
+            input#email.form-control(
+                class={
+                  'is-invalid': errors.email
+                }
+                name='data[email]'
+                type='email'
+                required
+            )
+            .invalid-feedback #{errors.email}
         .form-group
             label(for='password')= t('users.fields.password')
-            input#password.form-control(name='password' type='password' required)
-        button.btn.btn-primary= t('nav.signin')
+            input#password.form-control(
+                class={
+                  'is-invalid': errors.password
+                }
+                name='data[password]'
+                type='password'
+                required
+            )
+            .invalid-feedback #{errors.password}
+        input.btn.btn-primary(type='submit' value= t('nav.signin'))

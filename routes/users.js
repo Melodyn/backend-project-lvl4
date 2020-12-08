@@ -22,7 +22,11 @@ const routes = [
     handler: async (req, res) => {
       const { firstName, lastName, email } = await User.query().findById(req.params.id);
       res.view('signup', {
-        path: 'users', firstName, lastName, email,
+        path: 'users',
+        firstName,
+        lastName,
+        email,
+        errors: {},
       });
     },
   },
@@ -30,21 +34,21 @@ const routes = [
     method: 'POST',
     url: '/users',
     handler: async (req, res) => {
-      const userData = await userValidator.validate(req.body, { abortEarly: false });
-
-      await User.query().insert(userData)
-        .then(() => res.code(constants.HTTP_STATUS_CREATED).send())
-        .catch((err) => {
-          if (err instanceof UniqueViolationError) {
-            res
-              .code(constants.HTTP_STATUS_BAD_REQUEST)
-              .send(`"email ${userData.email}" already exists`);
-          } else {
-            res
-              .code(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-              .send(err.message);
-          }
-        });
+      // const userData = await userValidator.validate(req.body, { abortEarly: false });
+      //
+      // await User.query().insert(userData)
+      //   .then(() => res.code(constants.HTTP_STATUS_CREATED).send())
+      //   .catch((err) => {
+      //     if (err instanceof UniqueViolationError) {
+      //       res
+      //         .code(constants.HTTP_STATUS_BAD_REQUEST)
+      //         .send(`"email ${userData.email}" already exists`);
+      //     } else {
+      //       res
+      //         .code(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
+      //         .send(err.message);
+      //     }
+      //   });
 
       res.redirect('/');
     },

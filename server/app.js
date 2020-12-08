@@ -1,4 +1,5 @@
 import path from 'path';
+import qs from 'querystring';
 import { constants } from 'http2';
 // fastify
 import fastifyFormbody from 'fastify-formbody';
@@ -91,7 +92,24 @@ const setInternalization = (config) => i18next.init({
  * @param {FastifyInstance} server
  */
 const setStatic = (staticDir, server) => {
-  server.register(fastifyFormbody);
+  const formFieldRegex = new RegExp('data\\[(?<field>(.+))\\]');
+  server.register(fastifyFormbody, {
+    parser: (str) => {
+      const parsed = qs.parse(str);
+      return Object.entries(parsed).reduce((acc, [key, value]) => {
+        const formFields = key.match(formFieldRegex);
+        if (!formFields) {
+          const { data } = acc;
+          acc[key] = value;
+          acc.data = data;
+          return acc;
+        }
+        const { field } = formFields.groups;
+        acc.data[field] = value;
+        return acc;
+      }, { data: {} });
+    },
+  });
   server.register(fastifyStatic, {
     root: path.resolve(staticDir),
   });
@@ -115,6 +133,7 @@ const setAuth = (secret, server) => {
   server.decorateRequest('auth', {
     isAuthorized: false,
     user: {},
+    errors: {},
   });
   server.register(fastifyCookie, {
     secret,
@@ -202,7 +221,7 @@ const app = async (envName) => {
     server.log.info('Stop app', config);
     await database.destroy();
     await server.close();
-    console.info('App stopped');
+    server.log.info('App stopped');
     if (!config.IS_TEST_ENV) {
       process.exit(0);
     }
