@@ -6,47 +6,47 @@ block content
             label(for='firstName')= t('users.fields.firstName')
             input#firstName.form-control(
                 class={
-                  'is-invalid': errors.firstName
+                  'is-invalid': errors['data.firstName']
                 }
                 name='data[firstName]'
                 type='text'
                 value=firstName
                 required
             )
-            .invalid-feedback #{errors.firstName}
+            .invalid-feedback #{errors['data.firstName']}
         .form-group
             label(for='lastName')= t('users.fields.lastName')
             input#lastName.form-control(
                 class={
-                  'is-invalid': errors.lastName
+                  'is-invalid': errors['data.lastName']
                 }
                 name='data[lastName]'
                 type='text'
                 value=lastName
                 required
             )
-            .invalid-feedback #{errors.email}
+            .invalid-feedback #{errors['data.email']}
         .form-group
             label(for='email')= t('users.fields.email')
             input#email.form-control(
                 class={
-                  'is-invalid': errors.email
+                  'is-invalid': errors['data.email']
                 }
                 name='data[email]'
                 type='email'
                 value=email
                 required
             )
-            .invalid-feedback #{errors.email}
+            .invalid-feedback #{errors['data.email']}
         .form-group
             label(for='password')= t('users.fields.password')
             input#password.form-control(
                 class={
-                  'is-invalid': errors.password
+                  'is-invalid': errors['data.password']
                 }
                 name='data[password]'
                 type='password'
                 required=(path === 'signup')
             )
-            .invalid-feedback #{errors.email}
+            .invalid-feedback #{errors['data.email']}
         input.btn.btn-primary(type='submit' value= t('app.buttons.send'))

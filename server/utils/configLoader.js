@@ -23,6 +23,7 @@ export const configSchema = yup.object({
   STATIC_DIR: yup.string().required(),
   LOG_LEVEL: yup.string().required(),
   ROLLBAR_PSI_TOKEN: yup.string().required(),
+  COOKIE_SECRET_KEY: yup.string().required(),
   HOST: yup.string().required(),
   PORT: yup.number().required(),
   DB_TYPE: yup.string().required(),

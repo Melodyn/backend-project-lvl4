@@ -6,22 +6,22 @@ block content
             label(for='email')= t('users.fields.email')
             input#email.form-control(
                 class={
-                  'is-invalid': errors.email
+                  'is-invalid': errors['data.email']
                 }
                 name='data[email]'
                 type='email'
                 required
             )
-            .invalid-feedback #{errors.email}
+            .invalid-feedback #{errors['data.email']}
         .form-group
             label(for='password')= t('users.fields.password')
             input#password.form-control(
                 class={
-                  'is-invalid': errors.password
+                  'is-invalid': errors['data.password']
                 }
                 name='data[password]'
                 type='password'
                 required
             )
-            .invalid-feedback #{errors.password}
+            .invalid-feedback #{errors['data.password']}
         input.btn.btn-primary(type='submit' value= t('nav.signin'))

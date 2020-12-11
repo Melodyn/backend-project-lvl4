@@ -1,12 +1,12 @@
 import path from 'path';
-import qs from 'querystring';
 import { constants } from 'http2';
 // fastify
+import fastifySession from 'fastify-secure-session';
+import fastifyPass from 'fastify-passport';
 import fastifyFormbody from 'fastify-formbody';
 import fastifyStatic from 'fastify-static';
-import fastifyCookie from 'fastify-cookie';
-import fastifyAuth from 'fastify-auth';
 import fastify from 'fastify';
+import LocalStrategy from 'passport-local';
 // libs
 import pointOfView from 'point-of-view';
 import pug from 'pug';
@@ -16,10 +16,13 @@ import i18next from 'i18next';
 import yup, { ValidationError } from 'yup';
 // app
 import ru from '../locales/ru.js';
+import formParser from './utils/formParser.js';
 import models from '../models/index.js';
 import { User } from '../models/User.js';
 import routeGroups from '../routes/index.js';
 import { loadConfig, configSchema } from './utils/configLoader.js';
+
+const fastifyPassport = fastifyPass.default;
 
 /**
  * @typedef { ReturnType<typeof configSchema.validateSync> } Config
@@ -92,24 +95,7 @@ const setInternalization = (config) => i18next.init({
  * @param {FastifyInstance} server
  */
 const setStatic = (staticDir, server) => {
-  const formFieldRegex = new RegExp('data\\[(?<field>(.+))\\]');
-  server.register(fastifyFormbody, {
-    parser: (str) => {
-      const parsed = qs.parse(str);
-      return Object.entries(parsed).reduce((acc, [key, value]) => {
-        const formFields = key.match(formFieldRegex);
-        if (!formFields) {
-          const { data } = acc;
-          acc[key] = value;
-          acc.data = data;
-          return acc;
-        }
-        const { field } = formFields.groups;
-        acc.data[field] = value;
-        return acc;
-      }, { data: {} });
-    },
-  });
+  server.register(fastifyFormbody, { parser: formParser });
   server.register(fastifyStatic, {
     root: path.resolve(staticDir),
   });
@@ -126,47 +112,46 @@ const setStatic = (staticDir, server) => {
 };
 
 /**
- * @param {string} secret
+ * @param {Config} config
  * @param {FastifyInstance} server
  */
-const setAuth = (secret, server) => {
+const setAuth = (config, server) => {
+  const strategy = new LocalStrategy(
+    {
+      usernameField: 'email',
+      usernamePassword: 'password',
+    },
+    (email, password, done) => {
+      User.query().findOne({ email })
+        .then((user) => {
+          if (!user) {
+            return done(null, false, { message: `Not found user with email ${email}` });
+          }
+          if (user.password !== User.hashPassword(password)) {
+            return done(null, false, { message: 'Incorrect password' });
+          }
+
+          return done(null, user);
+        })
+        .catch(done);
+    },
+  );
+
   server.decorateRequest('auth', {
     isAuthorized: false,
     user: {},
     errors: {},
   });
-  server.register(fastifyCookie, {
-    secret,
+  server.register(fastifySession, {
+    key: Buffer.from(config.COOKIE_SECRET_KEY, 'hex'),
   });
-  server.register(fastifyAuth)
-    .after(() => {
-      server.addHook('preHandler', server.auth([
-        (req) => {
-          req.log.debug('Request cookies', req.cookies);
-          const { id, token } = yup.object({
-            id: yup.number().default(0).optional(),
-            token: yup.string().default('').optional(),
-          }).required().validateSync(req.cookies);
 
-          if (token === '') return Promise.resolve('ok');
+  fastifyPassport.use('local', strategy);
+  fastifyPassport.registerUserSerializer(async (user) => user);
+  fastifyPassport.registerUserDeserializer(async (user) => user);
 
-          return User.query().findById(id)
-            .then((user) => {
-              if (!user) {
-                throw new Error(`Not found user with id "${id}"`);
-              }
-              if (user.password !== token) {
-                throw new Error('Incorrect password');
-              }
-
-              req.auth = {
-                isAuthorized: true,
-                user,
-              };
-            });
-        },
-      ]));
-    });
+  server.register(fastifyPassport.initialize());
+  server.register(fastifyPassport.secureSession());
 };
 
 /**
@@ -182,7 +167,7 @@ const setRoutes = (server) => {
  */
 const setRollbar = (config, server) => {
   const rollbar = new Rollbar({
-    enabled: !config.IS_TEST_ENV && !config.IS_DEV_ENV,
+    enabled: config.IS_PROD_ENV,
     accessToken: config.ROLLBAR_PSI_TOKEN,
   });
 
@@ -210,7 +195,7 @@ const app = async (envName) => {
 
   await setInternalization(config);
   setStatic(config.STATIC_DIR, server);
-  setAuth(config.NODE_ENV, server);
+  setAuth(config, server);
   setRoutes(server);
   setRollbar(config, server);
 

@@ -42,6 +42,7 @@ jobs:
           HD_HOST: 0.0.0.0
           HD_LOG_LEVEL: info
           HD_ROLLBAR_PSI_TOKEN: ${{ secrets.ROLLBAR_PSI_TOKEN }}
+          HD_COOKIE_SECRET_KEY: ${{ secrets.COOKIE_SECRET_KEY }}
           HD_STATIC_DIR: src
           HD_DB_TYPE: pg
           HD_DB_HOST: ${{ secrets.DB_HOST }}
