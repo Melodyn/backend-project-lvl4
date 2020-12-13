@@ -56,9 +56,8 @@ const routes = [
     method: 'GET',
     url: '/session/new',
     handler: (req, res) => {
-      const flashErrors = res.flash('error') || [];
+      const [errors = {}] = res.flash('error') || [];
       const flash = res.flash('flash') || [];
-      const errors = _.fromPairs(flashErrors.flatMap(_.toPairs));
       res.view('signin', { path: 'signin', errors, flash });
     },
   },
@@ -66,9 +65,10 @@ const routes = [
     method: 'GET',
     url: '/users/new',
     handler: (req, res) => {
-      const flashErrors = res.flash('error') || [];
-      const errors = _.fromPairs(flashErrors.flatMap(_.toPairs));
-      res.view('signup', { path: 'signup', errors });
+      const [errors = {}] = res.flash('error') || [];
+      const [values = {}] = res.flash('values') || [];
+      console.log({ errors, values });
+      res.view('signup', { path: 'signup', errors, ...values });
     },
   },
   {

@@ -25,7 +25,7 @@ block content
                 value=lastName
                 required
             )
-            .invalid-feedback #{errors.email}
+            .invalid-feedback #{errors.lastName}
         .form-group
             label(for='email')= t('user.field.email')
             input#email.form-control(
@@ -48,5 +48,5 @@ block content
                 type='password'
                 required=(path === 'signup')
             )
-            .invalid-feedback #{errors.email}
+            .invalid-feedback #{errors.password}
         input.btn.btn-primary(type='submit' value= t('app.button.send'))

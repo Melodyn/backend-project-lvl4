@@ -138,7 +138,7 @@ const setAuth = (config, server) => {
             return done(null, false);
           }
 
-          req.flash('success', [{ type: 'success', text: i18next.t('user.info.signin') }]);
+          req.flash('flash', [{ type: 'success', text: i18next.t('user.info.signin') }]);
           return done(null, { hello: 'world' });
         })
         .catch(done);
