@@ -118,32 +118,38 @@ const setStatic = (staticDir, server) => {
 const setAuth = (config, server) => {
   const strategy = new LocalStrategy(
     {
-      usernameField: 'email',
-      usernamePassword: 'password',
+      usernameField: 'data[email]',
+      passwordField: 'data[password]',
+      passReqToCallback: true,
     },
-    (email, password, done) => {
-      User.query().findOne({ email })
+    (req, email, password, done) => {
+      if (req.isAuthenticated()) {
+        return done(null, req.user);
+      }
+
+      return User.query().findOne({ email })
         .then((user) => {
           if (!user) {
-            return done(null, false, { message: `Not found user with email ${email}` });
+            req.flash('error', { email: i18next.t('user.error.not_found', { email }) });
+            return done(null, false);
           }
           if (user.password !== User.hashPassword(password)) {
-            return done(null, false, { message: 'Incorrect password' });
+            req.flash('error', { password: i18next.t('user.error.password') });
+            return done(null, false);
           }
 
-          return done(null, user);
+          req.flash('success', [{ type: 'success', text: i18next.t('user.info.signin') }]);
+          return done(null, { hello: 'world' });
         })
         .catch(done);
     },
   );
 
-  server.decorateRequest('auth', {
-    isAuthorized: false,
-    user: {},
-    errors: {},
-  });
   server.register(fastifySession, {
     key: Buffer.from(config.COOKIE_SECRET_KEY, 'hex'),
+    cookie: {
+      path: '/',
+    },
   });
 
   fastifyPassport.use('local', strategy);

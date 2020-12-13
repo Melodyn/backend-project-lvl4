@@ -1,6 +1,10 @@
 import yup from 'yup';
 import { constants } from 'http2';
+import _ from 'lodash';
+import fastifyPass from 'fastify-passport';
 import { User, userFields } from '../models/User.js';
+
+const fastifyPassport = fastifyPass.default;
 
 /**
  * @type {import('fastify').RouteOptions[]}
@@ -40,49 +44,40 @@ const routes = [
   {
     method: 'POST',
     url: '/session',
-    handler: async (req, res) => {
-      const { email: emailValidator, password: passwordValidator } = userFields;
-      const { data, errors = null } = await yup
-        .object({
-          data: yup
-            .object({ email: emailValidator, password: passwordValidator })
-            .required(),
-        })
-        .required()
-        .validate(req.body, { abortEarly: false })
-        .catch(({ inner }) => ({ errors: inner }));
-
-      if (errors !== null) {
-        req.auth.errors = errors
-          .reduce((acc, { path, message }) => ({ ...acc, [path]: message }), {});
-        return res.redirect('/session/new');
-      }
-
-      req.log.debug({ data, body: req.body });
-      return res.redirect('/');
-    },
+    preValidation: fastifyPassport.authenticate('local', {
+      successRedirect: '/',
+      failureRedirect: '/session/new',
+      failureFlash: true,
+      successFlash: true,
+    }),
+    handler: () => {},
   },
   {
     method: 'GET',
     url: '/session/new',
     handler: (req, res) => {
-      res.view('signin', { path: 'signin', errors: req.auth.errors });
-      req.auth.errors = {};
+      const flashErrors = res.flash('error') || [];
+      const flash = res.flash('flash') || [];
+      const errors = _.fromPairs(flashErrors.flatMap(_.toPairs));
+      res.view('signin', { path: 'signin', errors, flash });
     },
   },
   {
     method: 'GET',
     url: '/users/new',
     handler: (req, res) => {
-      res.view('signup', { path: 'signup', errors: req.auth.errors });
-      req.auth.errors = {};
+      const flashErrors = res.flash('error') || [];
+      const errors = _.fromPairs(flashErrors.flatMap(_.toPairs));
+      res.view('signup', { path: 'signup', errors });
     },
   },
   {
     method: 'GET',
     url: '/',
     handler: (req, res) => {
-      res.view('main');
+      const resFlash = res.flash() ?? {};
+      const flash = Object.values(resFlash).flat();
+      res.view('main', { flash });
     },
   },
 ];

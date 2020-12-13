@@ -3,9 +3,9 @@ extends layout
 block content
     table.table.table-dark.table-striped.table-hover
         tr
-            th= t('users.fields.id')
-            th= t('users.fields.fullName')
-            th= t('users.fields.email')
+            th= t('user.field.id')
+            th= t('user.field.fullName')
+            th= t('user.field.email')
             th
         tbody
         each user in users
@@ -14,6 +14,6 @@ block content
             td #{user.firstName} #{user.lastName}
             td #{user.email}
             td
-                a(href=`/users/${user.id}/edit`)= t('users.buttons.edit')
+                a(href=`/users/${user.id}/edit`)= t('user.button.edit')
                 br
-                a(href=`/users/${user.id}/delete`)= t('users.buttons.delete')
+                a(href=`/users/${user.id}/delete`)= t('user.button.delete')

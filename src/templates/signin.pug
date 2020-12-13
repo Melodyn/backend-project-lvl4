@@ -3,25 +3,25 @@ extends layout
 block content
     form(method='post' action='/session')
         .form-group
-            label(for='email')= t('users.fields.email')
+            label(for='email')= t('user.field.email')
             input#email.form-control(
                 class={
-                  'is-invalid': errors['data.email']
+                  'is-invalid': errors.email
                 }
                 name='data[email]'
                 type='email'
                 required
             )
-            .invalid-feedback #{errors['data.email']}
+            .invalid-feedback #{errors.email}
         .form-group
-            label(for='password')= t('users.fields.password')
+            label(for='password')= t('user.field.password')
             input#password.form-control(
                 class={
-                  'is-invalid': errors['data.password']
+                  'is-invalid': errors.password
                 }
                 name='data[password]'
                 type='password'
                 required
             )
-            .invalid-feedback #{errors['data.password']}
+            .invalid-feedback #{errors.password}
         input.btn.btn-primary(type='submit' value= t('nav.signin'))

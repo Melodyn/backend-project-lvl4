@@ -8,7 +8,7 @@ html(lang='ru')
         meta(name='author' content='Mark Otto, Jacob Thornton, and Bootstrap contributors')
         meta(name='generator' content='Jekyll v4.1.1')
         title= t('app.name')
-        link(rel='apple-touch-icon' sizes='180x180' href='favicon/apple-touch-icon.png')
+        link(rel='apple-touch-icon' sizes='180x180' href='/favicon/apple-touch-icon.png')
         link(rel='icon' type='image/png' sizes='32x32' href='/favicon/favicon-32x32.png')
         link(rel='icon' type='image/png' sizes='16x16' href='/favicon/favicon-16x16.png')
         link(rel='manifest' href='/favicon/site.webmanifest')
@@ -25,5 +25,9 @@ html(lang='ru')
                     a.nav-link(class={ active: path === 'users' } href='/users')= t('nav.users')
                     a.nav-link(class={ active: path === 'signin' } href='/session/new')= t('nav.signin')
                     a.nav-link(class={ active: path === 'signup' } href='/users/new')= t('nav.signup')
+
+        each message in flash || []
+            .alert(class=`alert-${message.type}`)= message.text
+
         block content
         footer.mastfoot.mt-auto

@@ -38,6 +38,7 @@
     "fastify-static": "^3.3.0",
     "i18next": "^19.8.4",
     "knex": "^0.21.12",
+    "lodash": "^4.17.20",
     "objection": "^2.2.3",
     "passport-local": "^1.0.0",
     "pg": "^8.5.1",

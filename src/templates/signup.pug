@@ -3,50 +3,50 @@ extends layout
 block content
     form(method='post' action='/users')
         .form-group
-            label(for='firstName')= t('users.fields.firstName')
+            label(for='firstName')= t('user.field.firstName')
             input#firstName.form-control(
                 class={
-                  'is-invalid': errors['data.firstName']
+                  'is-invalid': errors.firstName
                 }
                 name='data[firstName]'
                 type='text'
                 value=firstName
                 required
             )
-            .invalid-feedback #{errors['data.firstName']}
+            .invalid-feedback #{errors.firstName}
         .form-group
-            label(for='lastName')= t('users.fields.lastName')
+            label(for='lastName')= t('user.field.lastName')
             input#lastName.form-control(
                 class={
-                  'is-invalid': errors['data.lastName']
+                  'is-invalid': errors.lastName
                 }
                 name='data[lastName]'
                 type='text'
                 value=lastName
                 required
             )
-            .invalid-feedback #{errors['data.email']}
+            .invalid-feedback #{errors.email}
         .form-group
-            label(for='email')= t('users.fields.email')
+            label(for='email')= t('user.field.email')
             input#email.form-control(
                 class={
-                  'is-invalid': errors['data.email']
+                  'is-invalid': errors.email
                 }
                 name='data[email]'
                 type='email'
                 value=email
                 required
             )
-            .invalid-feedback #{errors['data.email']}
+            .invalid-feedback #{errors.email}
         .form-group
-            label(for='password')= t('users.fields.password')
+            label(for='password')= t('user.field.password')
             input#password.form-control(
                 class={
-                  'is-invalid': errors['data.password']
+                  'is-invalid': errors.password
                 }
                 name='data[password]'
                 type='password'
                 required=(path === 'signup')
             )
-            .invalid-feedback #{errors['data.email']}
-        input.btn.btn-primary(type='submit' value= t('app.buttons.send'))
+            .invalid-feedback #{errors.email}
+        input.btn.btn-primary(type='submit' value= t('app.button.send'))
