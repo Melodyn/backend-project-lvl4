@@ -75,7 +75,7 @@ const routes = [
     method: 'GET',
     url: '/',
     handler: (req, res) => {
-      const resFlash = res.flash() ?? {};
+      const resFlash = res.flash() || {};
       const flash = Object.values(resFlash).flat();
       res.view('main', { flash });
     },
