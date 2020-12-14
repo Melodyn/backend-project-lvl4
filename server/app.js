@@ -2,6 +2,7 @@ import path from 'path';
 import { constants } from 'http2';
 // fastify
 import fastifySession from 'fastify-secure-session';
+import fastifyMethods from 'fastify-method-override';
 import fastifyPass from 'fastify-passport';
 import fastifyFormbody from 'fastify-formbody';
 import fastifyStatic from 'fastify-static';
@@ -96,6 +97,7 @@ const setInternalization = (config) => i18next.init({
  */
 const setStatic = (staticDir, server) => {
   server.register(fastifyFormbody, { parser: formParser });
+  server.register(fastifyMethods);
   server.register(fastifyStatic, {
     root: path.resolve(staticDir),
   });
@@ -108,6 +110,21 @@ const setStatic = (staticDir, server) => {
     },
     includeViewExtension: true,
     templates: path.resolve(staticDir, 'templates'),
+  });
+  server.addHook('preHandler', (req, res, done) => {
+    const [errors = {}] = res.flash('error') || [];
+    const [values = {}] = res.flash('error') || [];
+    const flash = res.flash('flash') || [];
+    res.locals = {
+      user: {
+        ...req.user,
+        isAuthenticated: req.isAuthenticated(),
+      },
+      flash,
+      errors,
+      ...values,
+    };
+    done();
   });
 };
 
@@ -130,16 +147,16 @@ const setAuth = (config, server) => {
       return User.query().findOne({ email })
         .then((user) => {
           if (!user) {
-            req.flash('error', { email: i18next.t('user.error.not_found', { email }) });
+            req.flash('error', { email: i18next.t('signin.error.not_found', { email }) });
             return done(null, false);
           }
           if (user.password !== User.hashPassword(password)) {
-            req.flash('error', { password: i18next.t('user.error.password') });
+            req.flash('error', { password: i18next.t('signin.error.password') });
             return done(null, false);
           }
 
-          req.flash('flash', [{ type: 'success', text: i18next.t('user.info.signin') }]);
-          return done(null, { hello: 'world' });
+          req.flash('flash', [{ type: 'success', text: i18next.t('signin.success') }]);
+          return done(null, user);
         })
         .catch(done);
     },

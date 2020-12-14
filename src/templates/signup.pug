@@ -49,4 +49,6 @@ block content
                 required=(path === 'signup')
             )
             .invalid-feedback #{errors.password}
+        if (path === 'users')
+            input(type='hidden' name='_method' value='patch')
         input.btn.btn-primary(type='submit' value= t('app.button.send'))

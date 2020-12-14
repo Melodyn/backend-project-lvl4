@@ -14,6 +14,7 @@ block content
             td #{user.firstName} #{user.lastName}
             td #{user.email}
             td
-                a(href=`/users/${user.id}/edit`)= t('user.button.edit')
-                br
-                a(href=`/users/${user.id}/delete`)= t('user.button.delete')
+                a.btn.btn-link.text-warning(href=`/users/${user.id}/edit`)= t('user.button.edit')
+                form(action=`/users/${user.id}` method='post')
+                    input(type='hidden' name='_method' value='delete')
+                    input.btn.btn-link.text-danger(type='submit' value= t('user.button.delete'))

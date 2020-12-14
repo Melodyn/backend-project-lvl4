@@ -4,5 +4,6 @@ block content
         main.inner.cover(role='main')
             h1.cover-heading= t('app.name')
             p.lead= t('app.description')
-            p.lead
-                a.btn.btn-lg.btn-secondary(href='/session/new')= t('nav.signin')
+            if !user.isAuthenticated
+                p.lead
+                    a.btn.btn-lg.btn-secondary(href='/session/new')= t('nav.signin')
