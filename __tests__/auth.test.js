@@ -84,13 +84,13 @@ describe('Positive cases', () => {
   });
 
   test('Logout', async () => {
-    const response = await app.server.inject({
+    const { statusCode } = await app.server.inject({
       method: 'DELETE',
       url: '/session',
       cookies: fixtureUser.cookies,
     });
 
-    expect(response.statusCode).toEqual(constants.HTTP_STATUS_FOUND);
+    expect(statusCode).toEqual(constants.HTTP_STATUS_FOUND);
   });
 
   test('Update logout', async () => {
@@ -106,6 +106,32 @@ describe('Positive cases', () => {
     const user = await User.query().findOne({ email: userFields.email });
 
     expect(user.password).toEqual(fixtureUser.passhash);
+    fixtureUser.password = newPassword;
+  });
+
+  test('Delete user', async () => {
+    const { cookies } = await app.server.inject({
+      method: 'POST',
+      url: '/session',
+      payload: { data: mergeData(fixtureUser.fields, fixtureUser.password) },
+    });
+    setCookie(fixtureUser, cookies);
+
+    const { statusCode } = await app.server.inject({
+      method: 'DELETE',
+      url: `/users/${fixtureUser.id}`,
+      cookies: fixtureUser.cookies,
+    });
+
+    expect(statusCode).toEqual(constants.HTTP_STATUS_FOUND);
+  });
+
+  test('DB user deleted', async () => {
+    const userByEmail = await User.query().findOne({ email: userFields.email });
+    expect(userByEmail).toBeFalsy();
+
+    const userById = await User.query().findById(fixtureUser.id);
+    expect(userById).toBeFalsy();
   });
 });
 

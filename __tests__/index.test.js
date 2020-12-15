@@ -12,12 +12,18 @@ afterAll(async () => {
   await fs.unlink(process.env.DB_NAME);
 });
 
-test('Get users without auth', async () => {
+test.each([
+  '/',
+  '/users',
+  '/users/new',
+  '/users/0/edit',
+  '/session/new',
+])('Click pages %s', async (page) => {
   const response = await app.server.inject({
     method: 'GET',
-    url: '/users',
+    url: page,
   });
 
-  expect(response.statusCode).toEqual(200);
+  expect(response.statusCode).toBeLessThanOrEqual(302);
   expect(response.body).not.toBeNull();
 });
