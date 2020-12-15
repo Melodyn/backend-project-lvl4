@@ -45,7 +45,7 @@ mixin formBody
             }
             name='data[password]'
             type='password'
-            required
+            required=(path === 'signup')
         )
         .invalid-feedback #{errors.password}
     input.btn.btn-primary(type='submit' value= t('app.button.send'))

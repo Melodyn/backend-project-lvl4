@@ -19,6 +19,12 @@ a:hover {
   border: .05rem solid #fff;
 }
 
+.alert,
+.btn-secondary:focus,
+.invalid-feedback {
+  text-shadow: none; /* Prevent inheritance from `body` */
+}
+
 
 /*
  * Base structure
