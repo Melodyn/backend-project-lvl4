@@ -18,12 +18,11 @@ const routes = [
   },
   {
     method: 'POST',
-    url: '/session/new',
-    preValidation: fastifyPassport.authenticate('local', {
+    url: '/session',
+    handler: fastifyPassport.authenticate('local', {
       successRedirect: '/',
       failureRedirect: '/session/new',
     }),
-    handler: () => {},
   },
   {
     method: 'GET',

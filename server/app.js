@@ -97,7 +97,6 @@ const setInternalization = (config) => i18next.init({
  */
 const setStatic = (staticDir, server) => {
   server.register(fastifyFormbody, { parser: formParser });
-  server.register(fastifyMethods);
   server.register(fastifyStatic, {
     root: path.resolve(staticDir),
   });
@@ -113,7 +112,7 @@ const setStatic = (staticDir, server) => {
   });
   server.addHook('preHandler', (req, res, done) => {
     const [errors = {}] = res.flash('error') || [];
-    const [values = {}] = res.flash('error') || [];
+    const [values = {}] = res.flash('values') || [];
     const flash = res.flash('flash') || [];
     res.locals = {
       user: {
@@ -126,6 +125,7 @@ const setStatic = (staticDir, server) => {
     };
     done();
   });
+  server.register(fastifyMethods);
 };
 
 /**
@@ -217,8 +217,8 @@ const app = async (envName) => {
   const server = initServer(config);
 
   await setInternalization(config);
-  setStatic(config.STATIC_DIR, server);
   setAuth(config, server);
+  setStatic(config.STATIC_DIR, server);
   setRoutes(server);
   setRollbar(config, server);
 
