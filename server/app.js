@@ -140,7 +140,6 @@ const setAuth = (config, server) => {
       passReqToCallback: true,
     },
     (req, email, password, done) => {
-      console.log({ req });
       if (req.isAuthenticated()) {
         return done(null, req.user);
       }

@@ -1,23 +1,35 @@
 export default {
   helloWorld: {
-    firstName: 'hello',
-    lastName: 'world',
-    email: 'hello@world.com',
+    id: 0,
+    fields: {
+      firstName: 'hello',
+      lastName: 'world',
+      email: 'hello@world.com',
+    },
     password: 'helloWorld',
-    cookies: { id: 0, token: '' },
+    passhash: '',
+    cookies: {},
   },
   helloKitty: {
-    firstName: 'hello',
-    lastName: 'kitty',
-    email: 'hello@kitty.com',
+    id: 0,
+    fields: {
+      firstName: 'hello',
+      lastName: 'kitty',
+      email: 'hello@kitty.com',
+    },
     password: 'helloKitty',
-    cookies: { id: 0, token: '' },
+    passhash: '',
+    cookies: {},
   },
   cruelWorld: {
-    firstName: 'cruel',
-    lastName: 'world',
-    email: 'cruel@world.com',
+    id: 0,
+    fields: {
+      firstName: 'cruel',
+      lastName: 'world',
+      email: 'cruel@world.com',
+    },
     password: 'cruelWorld',
-    cookies: { id: 0, token: '' },
+    passhash: '',
+    cookies: {},
   },
 };

@@ -127,7 +127,6 @@ const routes = [
         });
 
       if (errors) {
-        console.log({ errors });
         req.flash('error', errors);
         req.flash('value', values);
         return res.redirect(`/users/${req.params.id}/edit`);

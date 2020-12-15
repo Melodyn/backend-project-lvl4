@@ -2,9 +2,11 @@ import { promises as fs } from 'fs';
 import { constants } from 'http2';
 import createApp from '../server/index.js';
 import users from '../__fixtures__/users';
+import { User } from '../models/User.js';
 
 let app;
 
+const mergeData = (fields, password) => ({ ...fields, password });
 const setCookie = (user, cookies) => {
   user.cookies = cookies.reduce((acc, { name, value }) => ({ ...acc, [name]: value }), {});
 };
@@ -20,77 +22,91 @@ afterAll(async () => {
 
 describe('Positive cases', () => {
   const fixtureUser = { ...(users.helloWorld) };
-  const { cookies: defaultCookies, ...userWithPass } = fixtureUser;
-  const { password, ...userWithoutPass } = userWithPass;
+  const { fields: userFields, password: userPassword } = fixtureUser;
+  const userData = mergeData(userFields, userPassword);
 
   test('Create', async () => {
     const { statusCode } = await app.server.inject({
       method: 'POST',
       url: '/users',
-      payload: userWithPass,
+      payload: { data: userData },
     });
 
     expect(statusCode).toEqual(constants.HTTP_STATUS_FOUND);
+  });
+
+  test('DB user created', async () => {
+    const user = await User.query().findOne({ email: userFields.email });
+    expect(user).toEqual(expect.objectContaining({
+      id: expect.any(Number),
+      password: expect.not.stringContaining(userPassword),
+    }));
+    fixtureUser.id = user.id;
+    fixtureUser.passhash = user.password;
   });
 
   test('Login', async () => {
     const { statusCode, cookies } = await app.server.inject({
       method: 'POST',
-      url: '/login',
-      payload: userWithPass,
+      url: '/session',
+      payload: { data: userData },
     });
 
-    expect(statusCode).not.toEqual(constants.HTTP_STATUS_FOUND);
-    // expect(cookies).toEqual(expect.arrayContaining([expect.any(Object)]));
-    // setCookie(fixtureUser, cookies);
-    // expect(fixtureUser.cookies).toEqual(expect.objectContaining({
-    //   id: expect.any(String),
-    //   token: expect.any(String),
-    // }));
+    expect(statusCode).toEqual(constants.HTTP_STATUS_FOUND);
+    expect(cookies).toEqual(expect.arrayContaining([expect.objectContaining({
+      name: expect.any(String),
+      value: expect.any(String),
+      path: expect.any(String),
+    })]));
+    setCookie(fixtureUser, cookies);
   });
 
   test('Update', async () => {
-    const { cookies } = fixtureUser;
-    const newPassword = password.split('').reverse().join('');
+    const { cookies, id } = fixtureUser;
+    const newPassword = userPassword.split('').reverse().join('');
 
-    const { statusCode, body } = await app.server.inject({
+    const { statusCode } = await app.server.inject({
       method: 'PATCH',
-      url: `/users/${cookies.id}`,
-      payload: {
-        ...userWithoutPass,
-        password: newPassword,
-      },
+      url: `/users/${id}`,
+      payload: { data: mergeData(userFields, newPassword) },
       cookies,
     });
 
     expect(statusCode).toEqual(constants.HTTP_STATUS_FOUND);
-    // expect(body).toBeFalsy();
   });
-});
 
-describe('Negative cases', () => {
-  const kittyUser = { ...users.helloKitty };
-  const { cookies: kittyCookies, ...kittyWithPass } = kittyUser;
-  const { password: kittyPass, ...kittyWithoutPass } = kittyWithPass;
+  test('DB user updated', async () => {
+    const user = await User.query().findOne({ email: userFields.email });
 
-  const cruelUser = { ...users.cruelWorld };
-  const { cookies: userCookies, ...cruelWithPass } = cruelUser;
-  const { password: cruelPass, ...cruelWithoutPass } = cruelWithPass;
+    expect(user.id).toEqual(fixtureUser.id);
+    expect(user.password).not.toEqual(fixtureUser.passhash);
+    fixtureUser.passhash = user.password;
+  });
 
-  test.each([
-    ['Prepare create', kittyUser, constants.HTTP_STATUS_FOUND],
-    ['Prepare create', cruelWithPass, constants.HTTP_STATUS_FOUND],
-    ['Create exists user', cruelWithPass, constants.HTTP_STATUS_FOUND],
-    ['Create without password', cruelWithoutPass, constants.HTTP_STATUS_FOUND],
-  ])('%s', async (caseName, payload, expectedCode) => {
-    const { statusCode } = await app.server.inject({
-      method: 'POST',
-      url: '/users',
-      payload,
+  test('Logout', async () => {
+    const response = await app.server.inject({
+      method: 'DELETE',
+      url: '/session',
+      cookies: fixtureUser.cookies,
     });
 
-    expect(statusCode).toEqual(expectedCode);
+    expect(response.statusCode).toEqual(constants.HTTP_STATUS_FOUND);
   });
 
-  // TODO написать негативные кейсы с куками
+  test('Update logout', async () => {
+    const { cookies, id } = fixtureUser;
+    const newPassword = userPassword.split('').reverse().join('');
+
+    await app.server.inject({
+      method: 'PATCH',
+      url: `/users/${id}`,
+      payload: { data: mergeData(userFields, newPassword) },
+      cookies,
+    });
+    const user = await User.query().findOne({ email: userFields.email });
+
+    expect(user.password).toEqual(fixtureUser.passhash);
+  });
 });
+
+// TODO написать негативные кейсы
