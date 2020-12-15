@@ -1,9 +1,12 @@
 import { constants } from 'http2';
 import Objection from 'objection';
+import yup from 'yup';
 import _ from 'lodash';
 import i18next from 'i18next';
-import { User, userValidator } from '../models/User.js';
+import fastifyPass from 'fastify-passport';
+import { User, userValidator, userFields } from '../models/User.js';
 
+const fastifyPassport = fastifyPass.default;
 const { UniqueViolationError } = Objection;
 
 /**
@@ -13,14 +16,15 @@ const routes = [
   {
     method: 'GET',
     url: '/users/:id/edit',
-    handler: async (req, res) => {
-      if (req.isAuthenticated() && (parseFloat(req.params.id) === req.user.id)) {
-        const user = await User.query().findById(req.params.id);
-        res.view('signup', { path: 'users', ...user });
-      } else {
+    preValidation: fastifyPassport.authenticate('local', {}, (req, res) => {
+      if (!(req.isAuthenticated() && (parseFloat(req.params.id) === req.user.id))) {
         req.flash('flash', [{ type: 'warning', text: i18next.t('user.action.edit.error') }]);
         res.redirect('/users');
       }
+    }),
+    handler: async (req, res) => {
+      const user = await User.query().findById(req.params.id);
+      res.view('signup', { path: 'users', values: user });
     },
   },
   {
@@ -41,16 +45,17 @@ const routes = [
   {
     method: 'DELETE',
     url: '/users/:id',
-    handler: async (req, res) => {
-      if (req.isAuthenticated() && (parseFloat(req.params.id) === req.user.id)) {
-        await User.query().deleteById(req.user.id);
-        req.logOut();
-        req.flash('flash', [{ type: 'success', text: i18next.t('user.action.delete.success') }]);
-        res.redirect('/');
-      } else {
+    preValidation: fastifyPassport.authenticate('local', {}, (req, res) => {
+      if (!(req.isAuthenticated() && (parseFloat(req.params.id) === req.user.id))) {
         req.flash('flash', [{ type: 'warning', text: i18next.t('user.action.delete.error') }]);
         res.redirect('/users');
       }
+    }),
+    handler: async (req, res) => {
+      await User.query().deleteById(req.user.id);
+      req.logOut();
+      req.flash('flash', [{ type: 'success', text: i18next.t('user.action.delete.success') }]);
+      res.redirect('/');
     },
   },
   {
@@ -72,7 +77,7 @@ const routes = [
 
       if (errors) {
         req.flash('error', errors);
-        req.flash('values', values);
+        req.flash('value', values);
         return res.redirect('/users/new');
       }
 
@@ -94,16 +99,47 @@ const routes = [
   {
     method: 'PATCH',
     url: '/users/:id',
-    handler: async (req, res) => {
-      // TODO: переделать редактирование
-      if (!req.auth.isAuthorized) {
-        res.code(constants.HTTP_STATUS_UNAUTHORIZED)
-          .send('Access denied');
-        return;
+    preValidation: fastifyPassport.authenticate('local', {}, (req, res) => {
+      if (!(req.isAuthenticated() && (parseFloat(req.params.id) === req.user.id))) {
+        req.flash('flash', [{ type: 'warning', text: i18next.t('user.action.edit.error') }]);
+        res.redirect('/users');
       }
-      const updatedData = await userValidator.validate(req.body);
-      await User.query().update(updatedData).where({ id: req.auth.user.id });
-      res.code(constants.HTTP_STATUS_NO_CONTENT).send();
+    }),
+    handler: async (req, res) => {
+      const {
+        userData: { password = '', ...updatedData },
+        errors,
+        values,
+      } = await yup.object({
+        ...userFields,
+        password: yup.string().default('').optional(),
+      }).required()
+        .validate(req.body.data, { abortEarly: false })
+        .then((user) => ({ userData: user, errors: null, values: {} }))
+        .catch((err) => {
+          const innerErrors = err.inner.map(({ path }) => ([path, i18next.t(`signup.error.${path}`)]));
+          const innerValues = _.toPairs(err.value).map(([path, value]) => ([path, value]));
+          return {
+            userData: {},
+            errors: _.fromPairs(innerErrors),
+            values: _.fromPairs(innerValues),
+          };
+        });
+
+      if (errors) {
+        console.log({ errors });
+        req.flash('error', errors);
+        req.flash('value', values);
+        return res.redirect(`/users/${req.params.id}/edit`);
+      }
+
+      if (password.length > 0) {
+        updatedData.password = password;
+      }
+
+      await User.query().update(updatedData).where({ id: req.user.id });
+      req.flash('flash', [{ type: 'success', text: i18next.t('user.action.edit.success') }]);
+      return res.redirect('/users');
     },
   },
 ];

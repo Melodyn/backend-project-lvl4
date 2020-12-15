@@ -63,7 +63,7 @@ describe('Positive cases', () => {
       cookies,
     });
 
-    expect(statusCode).not.toEqual(constants.HTTP_STATUS_FOUND);
+    expect(statusCode).toEqual(constants.HTTP_STATUS_FOUND);
     // expect(body).toBeFalsy();
   });
 });

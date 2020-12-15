@@ -1,54 +1,61 @@
 extends layout
 
+mixin formBody
+    .form-group
+        label(for='firstName')= t('user.field.firstName')
+        input#firstName.form-control(
+            class={
+              'is-invalid': errors.firstName
+            }
+            name='data[firstName]'
+            type='text'
+            value=values.firstName
+            required
+        )
+        .invalid-feedback #{errors.firstName}
+    .form-group
+        label(for='lastName')= t('user.field.lastName')
+        input#lastName.form-control(
+            class={
+              'is-invalid': errors.lastName
+            }
+            name='data[lastName]'
+            type='text'
+            value=values.lastName
+            required
+        )
+        .invalid-feedback #{errors.lastName}
+    .form-group
+        label(for='email')= t('user.field.email')
+        input#email.form-control(
+            class={
+              'is-invalid': errors.email
+            }
+            name='data[email]'
+            type='email'
+            value=values.email
+            required
+        )
+        .invalid-feedback #{errors.email}
+    .form-group
+        label(for='password')= t('user.field.password')
+        input#password.form-control(
+            class={
+              'is-invalid': errors.password
+            }
+            name='data[password]'
+            type='password'
+            required
+        )
+        .invalid-feedback #{errors.password}
+    input.btn.btn-primary(type='submit' value= t('app.button.send'))
+
+
 block content
-    form(method='post' action='/users')
-        .form-group
-            label(for='firstName')= t('user.field.firstName')
-            input#firstName.form-control(
-                class={
-                  'is-invalid': errors.firstName
-                }
-                name='data[firstName]'
-                type='text'
-                value=firstName
-                required
-            )
-            .invalid-feedback #{errors.firstName}
-        .form-group
-            label(for='lastName')= t('user.field.lastName')
-            input#lastName.form-control(
-                class={
-                  'is-invalid': errors.lastName
-                }
-                name='data[lastName]'
-                type='text'
-                value=lastName
-                required
-            )
-            .invalid-feedback #{errors.lastName}
-        .form-group
-            label(for='email')= t('user.field.email')
-            input#email.form-control(
-                class={
-                  'is-invalid': errors.email
-                }
-                name='data[email]'
-                type='email'
-                value=email
-                required
-            )
-            .invalid-feedback #{errors.email}
-        .form-group
-            label(for='password')= t('user.field.password')
-            input#password.form-control(
-                class={
-                  'is-invalid': errors.password
-                }
-                name='data[password]'
-                type='password'
-                required=(path === 'signup')
-            )
-            .invalid-feedback #{errors.password}
-        if (path === 'users')
+    if (path === 'users')
+        form(method='post' action=`/users/${user.id}`)
             input(type='hidden' name='_method' value='patch')
-        input.btn.btn-primary(type='submit' value= t('app.button.send'))
+            +formBody
+    else
+        form(method='post' action=`/users`)
+            +formBody

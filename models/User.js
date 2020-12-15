@@ -9,16 +9,20 @@ export class User extends Model {
     return 'users';
   }
 
-  static beforeInsert(queryContext) {
+  static hashHook(queryContext) {
     queryContext.inputItems.forEach((item) => {
-      item.password = this.hashPassword(item.password);
+      if (item.password) {
+        item.password = this.hashPassword(item.password);
+      }
     });
   }
 
+  static beforeInsert(queryContext) {
+    this.hashHook(queryContext);
+  }
+
   static beforeUpdate(queryContext) {
-    queryContext.inputItems.forEach((item) => {
-      item.password = this.hashPassword(item.password);
-    });
+    this.hashHook(queryContext);
   }
 
   static hashPassword(password) {
@@ -27,9 +31,9 @@ export class User extends Model {
 }
 
 export const userFields = {
-  firstName: yup.string().required(),
-  lastName: yup.string().required(),
-  password: yup.string().required(),
+  firstName: yup.string().min(1).required(),
+  lastName: yup.string().min(1).required(),
+  password: yup.string().min(1).required(),
   email: yup.string().email().required(),
 };
 

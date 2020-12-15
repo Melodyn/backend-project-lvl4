@@ -112,7 +112,7 @@ const setStatic = (staticDir, server) => {
   });
   server.addHook('preHandler', (req, res, done) => {
     const [errors = {}] = res.flash('error') || [];
-    const [values = {}] = res.flash('values') || [];
+    const [values = {}] = res.flash('value') || [];
     const flash = res.flash('flash') || [];
     res.locals = {
       user: {
@@ -121,7 +121,7 @@ const setStatic = (staticDir, server) => {
       },
       flash,
       errors,
-      ...values,
+      values,
     };
     done();
   });
@@ -140,6 +140,7 @@ const setAuth = (config, server) => {
       passReqToCallback: true,
     },
     (req, email, password, done) => {
+      console.log({ req });
       if (req.isAuthenticated()) {
         return done(null, req.user);
       }
@@ -148,10 +149,12 @@ const setAuth = (config, server) => {
         .then((user) => {
           if (!user) {
             req.flash('error', { email: i18next.t('signin.error.not_found', { email }) });
+            req.flash('value', { email });
             return done(null, false);
           }
           if (user.password !== User.hashPassword(password)) {
             req.flash('error', { password: i18next.t('signin.error.password') });
+            req.flash('value', { email });
             return done(null, false);
           }
 
