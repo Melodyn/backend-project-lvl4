@@ -3,6 +3,7 @@ import yup from 'yup';
 
 const envs = {
   test: 'test',
+  hexlet: 'hexlet',
   dev: 'development',
   prod: 'production',
 };
@@ -10,6 +11,7 @@ const envs = {
 const readFromFile = (path) => dotenv.config({ path }).parsed;
 const configByEnv = {
   [envs.test]: readFromFile('test.config'),
+  [envs.hexlet]: readFromFile('test.config'),
   [envs.dev]: readFromFile('development.env'),
   [envs.prod]: process.env,
 };

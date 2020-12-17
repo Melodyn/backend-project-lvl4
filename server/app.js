@@ -208,7 +208,7 @@ const setRollbar = (config, server) => {
   });
 };
 
-const app = async (envName) => {
+const app = async (envName, theKostyl = null) => {
   process.on('unhandledRejection', (err) => {
     console.error(err);
     process.exit(1);
@@ -225,7 +225,12 @@ const app = async (envName) => {
   setRollbar(config, server);
 
   await database.migrate.latest();
-  await server.listen(config.PORT, config.HOST);
+
+  if (envName === 'hexlet' && theKostyl !== null) {
+    await server.listen(theKostyl.port, theKostyl.host, theKostyl.cb);
+  } else {
+    await server.listen(config.PORT, config.HOST);
+  }
 
   const stop = async () => {
     server.log.info('Stop app', config);
