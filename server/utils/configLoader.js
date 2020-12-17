@@ -11,7 +11,7 @@ const envs = {
 const readFromFile = (path) => dotenv.config({ path }).parsed;
 const configByEnv = {
   [envs.test]: readFromFile('test.config'),
-  [envs.hexlet]: readFromFile('test.config'),
+  [envs.hexlet]: readFromFile('hexlet.config'),
   [envs.dev]: readFromFile('development.env'),
   [envs.prod]: process.env,
 };
