@@ -17,9 +17,12 @@ const configByEnv = {
 };
 
 const checkEnv = (expected) => (current, schema) => schema.default(current === expected);
+const checkTestEnv = (current, schema) => schema
+  .default(yup.string().oneOf([envs.test, envs.hexlet]).required().isValidSync(current));
+
 export const configSchema = yup.object({
   NODE_ENV: yup.string().oneOf(Object.values(envs)).required(),
-  IS_TEST_ENV: yup.boolean().when('NODE_ENV', checkEnv(envs.test)).required(),
+  IS_TEST_ENV: yup.boolean().when('NODE_ENV', checkTestEnv),
   IS_DEV_ENV: yup.boolean().when('NODE_ENV', checkEnv(envs.dev)).required(),
   IS_PROD_ENV: yup.boolean().when('NODE_ENV', checkEnv(envs.prod)).required(),
   STATIC_DIR: yup.string().required(),
