@@ -1,7 +1,7 @@
-import fastifyPass from 'fastify-passport';
+import * as fastifyPass from 'fastify-passport';
 import i18next from 'i18next';
 
-const fastifyPassport = fastifyPass.default;
+const fastifyPassport = fastifyPass.default.default ?? fastifyPass.default;
 
 /**
  * @type {import('fastify').RouteOptions[]}

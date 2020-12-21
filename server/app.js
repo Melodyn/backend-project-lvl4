@@ -3,7 +3,7 @@ import { constants } from 'http2';
 // fastify
 import fastifySession from 'fastify-secure-session';
 import fastifyMethods from 'fastify-method-override';
-import fastifyPass from 'fastify-passport';
+import * as fastifyPass from 'fastify-passport';
 import fastifyFormbody from 'fastify-formbody';
 import fastifyStatic from 'fastify-static';
 import fastify from 'fastify';
@@ -21,9 +21,9 @@ import formParser from './utils/formParser.js';
 import models from '../models/index.js';
 import { User } from '../models/User.js';
 import routeGroups from '../routes/index.js';
-import { loadConfig, configSchema, envs } from './utils/configLoader.js';
+import { loadConfig, envs } from './utils/configLoader.js';
 
-const fastifyPassport = fastifyPass.default;
+const fastifyPassport = fastifyPass.default.default ?? fastifyPass.default;
 
 /**
  * @typedef { import('./utils/configLoader.js').Config } Config
@@ -210,7 +210,7 @@ const setRollbar = (config, server) => {
   });
 };
 
-const app = async (envName, theKostyl = null) => {
+const app = async (envName) => {
   process.on('unhandledRejection', (err) => {
     console.error(err);
     process.exit(1);
@@ -228,11 +228,12 @@ const app = async (envName, theKostyl = null) => {
 
   await database.migrate.latest();
 
-  if (envName === 'hexlet' && theKostyl !== null) {
-    await server.listen(theKostyl.port, theKostyl.host, theKostyl.cb);
-  } else {
-    await server.listen(config.PORT, config.HOST);
+  if (envName === 'hexlet') {
+    server.objection = { knex: database };
+    return server;
   }
+
+  await server.listen(config.PORT, config.HOST);
 
   const stop = async () => {
     server.log.info('Stop app', config);
