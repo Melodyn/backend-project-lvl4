@@ -14,19 +14,19 @@ import pug from 'pug';
 import Rollbar from 'rollbar';
 import knex from 'knex';
 import i18next from 'i18next';
-import yup, { ValidationError } from 'yup';
+import { ValidationError } from 'yup';
 // app
 import ru from '../locales/ru.js';
 import formParser from './utils/formParser.js';
 import models from '../models/index.js';
 import { User } from '../models/User.js';
 import routeGroups from '../routes/index.js';
-import { loadConfig, configSchema } from './utils/configLoader.js';
+import { loadConfig, configSchema, envs } from './utils/configLoader.js';
 
 const fastifyPassport = fastifyPass.default;
 
 /**
- * @typedef { ReturnType<typeof configSchema.validateSync> } Config
+ * @typedef { import('./utils/configLoader.js').Config } Config
  */
 
 /**
@@ -43,14 +43,16 @@ const fastifyPassport = fastifyPass.default;
  */
 const initDatabase = (config) => {
   const {
-    DB_TYPE, DB_NAME, DB_USER, DB_PASS, DB_HOST, DB_PORT,
+    DB_TYPE, DB_NAME, DB_USER, DB_PASS, DB_HOST, DB_PORT, NODE_ENV,
   } = config;
 
-  const databaseConnectionsByClient = {
-    sqlite3: {
+  const databaseConnectionsByEnv = {
+    [envs.test]: ':memory:',
+    [envs.hexlet]: ':memory:',
+    [envs.dev]: {
       filename: DB_NAME,
     },
-    pg: {
+    [envs.prod]: {
       host: DB_HOST,
       user: DB_USER,
       password: DB_PASS,
@@ -61,7 +63,7 @@ const initDatabase = (config) => {
 
   const db = knex({
     client: DB_TYPE,
-    connection: databaseConnectionsByClient[DB_TYPE],
+    connection: databaseConnectionsByEnv[NODE_ENV],
     useNullAsDefault: true,
     migrations: {
       tableName: 'migrations',

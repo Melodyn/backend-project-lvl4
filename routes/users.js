@@ -1,6 +1,6 @@
 import { constants } from 'http2';
 import Objection from 'objection';
-import yup from 'yup';
+import * as yup from 'yup';
 import _ from 'lodash';
 import i18next from 'i18next';
 import fastifyPass from 'fastify-passport';

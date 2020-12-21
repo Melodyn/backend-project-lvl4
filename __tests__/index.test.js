@@ -9,7 +9,6 @@ beforeAll(async () => {
 
 afterAll(async () => {
   if (app) await app.stop();
-  await fs.unlink(process.env.DB_NAME);
 });
 
 test.each([

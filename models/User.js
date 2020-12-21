@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import yup from 'yup';
+import * as yup from 'yup';
 import objection from 'objection';
 
 const { Model } = objection;

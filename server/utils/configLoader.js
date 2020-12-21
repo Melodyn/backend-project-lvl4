@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
-import yup from 'yup';
+import * as yup from 'yup';
 
-const envs = {
+export const envs = {
   test: 'test',
   hexlet: 'hexlet',
   dev: 'development',
@@ -39,6 +39,14 @@ export const configSchema = yup.object({
   DB_NAME: yup.string().required(),
 }).required();
 
+/**
+ * @typedef { ReturnType<typeof configSchema.validateSync> } Config
+ */
+
+/**
+ * @param {string} envName
+ * @returns {Config}
+ */
 export const loadConfig = (envName) => {
   try {
     return configSchema.validateSync(configByEnv[envName], { abortEarly: false });
