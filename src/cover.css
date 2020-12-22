@@ -20,7 +20,7 @@ a:hover {
 }
 
 .alert,
-.btn-secondary:focus,
+.btn,
 .invalid-feedback {
   text-shadow: none; /* Prevent inheritance from `body` */
 }

@@ -1,6 +1,7 @@
 extends layout
 
 block content
+    a.btn.btn-light.ml-auto.mb-4(href='/statuses/new')= t('status.button.create')
     table.table.table-dark.table-striped.table-hover
         tr
             th= t('status.field.id')
@@ -15,6 +16,6 @@ block content
             td #{status.created_at}
             td
                 a.btn.btn-link.text-warning(href=`/statuses/${status.id}/edit`)= t('status.button.edit')
-                form(action=`/status/${user.id}` method='post')
+                form(action=`/statuses/${status.id}` method='post')
                     input(type='hidden' name='_method' value='delete')
                     input.btn.btn-link.text-danger(type='submit' value= t('status.button.delete'))

@@ -1,9 +1,8 @@
 import Objection from 'objection';
-import * as yup from 'yup';
 import _ from 'lodash';
 import i18next from 'i18next';
 import * as fastifyPass from 'fastify-passport';
-import { Status, statusValidator, statusFields } from '../models/Status.js';
+import { Status, statusValidator } from '../models/Status.js';
 
 const fastifyPassport = fastifyPass.default.default || fastifyPass.default;
 const { UniqueViolationError } = Objection;
@@ -22,14 +21,21 @@ const routes = [
       }
     }),
     handler: async (req, res) => {
-      res.view('statuses', { path: 'statuses', statuses: [] });
+      const status = await Status.query().findById(req.params.id);
+      res.view('statusesForm', { path: 'statuses/edit', values: status });
     },
   },
   {
     method: 'GET',
     url: '/statuses/new',
+    preValidation: fastifyPassport.authenticate('local', {}, (req, res) => {
+      if (!(req.isAuthenticated())) {
+        req.flash('flash', [{ type: 'warning', text: i18next.t('status.action.edit.error') }]);
+        res.redirect('/statuses');
+      }
+    }),
     handler: (req, res) => {
-      res.view('statuses', { path: 'statuses', statuses: [] });
+      res.view('statusesForm', { path: 'statuses/new' });
     },
   },
   {
@@ -60,39 +66,28 @@ const routes = [
     url: '/statuses',
     preValidation: fastifyPassport.authenticate('local', {}, (req, res) => {
       if (!(req.isAuthenticated())) {
-        req.flash('flash', [{ type: 'warning', text: i18next.t('status.action.edit.error') }]);
+        req.flash('flash', [{ type: 'warning', text: i18next.t('status.action.create.error') }]);
         res.redirect('/statuses');
       }
     }),
     handler: async (req, res) => {
-      const { statusData, errors, values } = await statusValidator
-        .validate(req.body.data, { abortEarly: false })
-        .then((status) => ({ statusData: status, errors: null, values: {} }))
-        .catch((err) => {
-          const innerErrors = err.inner.map(({ path }) => ([path, i18next.t(`signup.error.${path}`)]));
-          const innerValues = _.toPairs(err.value).map(([path, value]) => ([path, value]));
-          return {
-            statusData: null,
-            errors: _.fromPairs(innerErrors),
-            values: _.fromPairs(innerValues),
-          };
-        });
+      const isValid = await statusValidator
+        .isValid(req.body.data, { abortEarly: false });
 
-      if (errors) {
-        req.flash('error', errors);
-        req.flash('value', values);
-        return res.redirect('/statuses/new');
+      if (!isValid) {
+        req.flash('flash', [{ type: 'warning', text: i18next.t('status.action.create.error') }]);
+        return res.redirect('/statuses');
       }
 
-      return Status.query().insert(statusData)
+      return Status.query().insert(req.body.data)
         .then(() => {
-          req.flash('flash', [{ type: 'success', text: i18next.t('signup.success') }]);
-          return res.redirect('/');
+          req.flash('flash', [{ type: 'success', text: i18next.t('status.action.create.success') }]);
+          return res.redirect('/statuses');
         })
         .catch((err) => {
           if (err instanceof UniqueViolationError) {
-            req.flash('error', { email: i18next.t('signup.error.email_exists', { email: statusData.email }) });
-            return res.redirect('/statuses/new');
+            req.flash('flash', [{ type: 'warning', text: i18next.t('status.action.create.error') }]);
+            return res.redirect('/statuses');
           }
           req.flash('flash', [{ type: 'error', text: err.message }]);
           return res.redirect('/');
@@ -109,26 +104,23 @@ const routes = [
       }
     }),
     handler: async (req, res) => {
-      const { updatedData, errors, values } = await statusValidator
-        .validate(req.body.data, { abortEarly: false })
-        .then((status) => ({ updatedData: status, errors: null, values: {} }))
-        .catch((err) => {
-          const innerErrors = err.inner.map(({ path }) => ([path, i18next.t(`signup.error.${path}`)]));
-          const innerValues = _.toPairs(err.value).map(([path, value]) => ([path, value]));
-          return {
-            updatedData: null,
-            errors: _.fromPairs(innerErrors),
-            values: _.fromPairs(innerValues),
-          };
-        });
+      const isValid = await statusValidator
+        .isValid(req.body.data, { abortEarly: false });
 
-      if (errors) {
-        req.flash('error', errors);
-        req.flash('value', values);
-        return res.redirect(`/statuses/${req.params.id}/edit`);
+      if (!isValid) {
+        req.flash('flash', [{ type: 'warning', text: i18next.t('status.action.edit.error') }]);
+        return res.redirect('/statuses');
       }
 
-      await Status.query().update(updatedData).where({ id: req.params.id });
+      await Status.query().update(req.body.data).where({ id: req.params.id })
+        .catch((err) => {
+          if (err instanceof UniqueViolationError) {
+            req.flash('flash', [{ type: 'warning', text: i18next.t('status.action.edit.error') }]);
+            return res.redirect('/statuses');
+          }
+          req.flash('flash', [{ type: 'error', text: err.message }]);
+          return res.redirect('/');
+        });
       req.flash('flash', [{ type: 'success', text: i18next.t('status.action.edit.success') }]);
       return res.redirect('/statuses');
     },
