@@ -67,6 +67,7 @@ const initDatabase = (config) => {
     useNullAsDefault: true,
     migrations: {
       tableName: 'migrations',
+      directory: NODE_ENV === envs.hexlet ? './code/migrations' : 'migrations',
     },
   });
   models.forEach((model) => model.knex(db));
