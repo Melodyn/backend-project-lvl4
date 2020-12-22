@@ -6,7 +6,7 @@ import i18next from 'i18next';
 import * as fastifyPass from 'fastify-passport';
 import { User, userValidator, userFields } from '../models/User.js';
 
-const fastifyPassport = fastifyPass.default.default ?? fastifyPass.default;
+const fastifyPassport = fastifyPass.default.default || fastifyPass.default;
 const { UniqueViolationError } = Objection;
 
 /**

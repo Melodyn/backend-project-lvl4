@@ -23,7 +23,7 @@ import { User } from '../models/User.js';
 import routeGroups from '../routes/index.js';
 import { loadConfig, envs } from './utils/configLoader.js';
 
-const fastifyPassport = fastifyPass.default.default ?? fastifyPass.default;
+const fastifyPassport = fastifyPass.default.default || fastifyPass.default;
 
 /**
  * @typedef { import('./utils/configLoader.js').Config } Config
