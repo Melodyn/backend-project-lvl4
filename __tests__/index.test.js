@@ -17,6 +17,9 @@ test.each([
   '/users/new',
   '/users/0/edit',
   '/session/new',
+  '/statuses',
+  '/statuses/new',
+  '/statuses/0/edit',
 ])('Click pages %s', async (page) => {
   const response = await app.server.inject({
     method: 'GET',
