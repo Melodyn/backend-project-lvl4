@@ -3,8 +3,8 @@ extends layout
 block content
     form(method='post' action='/session')
         .form-group
-            label(for='email')= t('user.field.email')
-            input#email.form-control(
+            label(for='data_email')= t('user.field.email')
+            input#data_email.form-control(
                 class={
                   'is-invalid': errors.email
                 }
@@ -15,8 +15,8 @@ block content
             )
             .invalid-feedback #{errors.email}
         .form-group
-            label(for='password')= t('user.field.password')
-            input#password.form-control(
+            label(for='data_password')= t('user.field.password')
+            input#data_password.form-control(
                 class={
                   'is-invalid': errors.password
                 }
@@ -25,4 +25,4 @@ block content
                 required
             )
             .invalid-feedback #{errors.password}
-        input.btn.btn-primary(type='submit' value= t('nav.signin'))
+        input.btn.btn-primary(type='submit' value= t('app.button.signin'))

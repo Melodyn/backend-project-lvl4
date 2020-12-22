@@ -2,8 +2,8 @@ extends layout
 
 mixin formBody
     .form-group
-        label(for='firstName')= t('user.field.firstName')
-        input#firstName.form-control(
+        label(for='data_firstName')= t('user.field.firstName')
+        input#data_firstName.form-control(
             class={
               'is-invalid': errors.firstName
             }
@@ -14,8 +14,8 @@ mixin formBody
         )
         .invalid-feedback #{errors.firstName}
     .form-group
-        label(for='lastName')= t('user.field.lastName')
-        input#lastName.form-control(
+        label(for='data_lastName')= t('user.field.lastName')
+        input#data_lastName.form-control(
             class={
               'is-invalid': errors.lastName
             }
@@ -26,8 +26,8 @@ mixin formBody
         )
         .invalid-feedback #{errors.lastName}
     .form-group
-        label(for='email')= t('user.field.email')
-        input#email.form-control(
+        label(for='data_email')= t('user.field.email')
+        input#data_email.form-control(
             class={
               'is-invalid': errors.email
             }
@@ -38,8 +38,8 @@ mixin formBody
         )
         .invalid-feedback #{errors.email}
     .form-group
-        label(for='password')= t('user.field.password')
-        input#password.form-control(
+        label(for='data_password')= t('user.field.password')
+        input#data_password.form-control(
             class={
               'is-invalid': errors.password
             }
@@ -48,7 +48,7 @@ mixin formBody
             required=(path === 'signup')
         )
         .invalid-feedback #{errors.password}
-    input.btn.btn-primary(type='submit' value= t('app.button.send'))
+    input.btn.btn-primary(type='submit' value= t((path === 'signup') ? 'app.button.save' : 'user.button.edit'))
 
 
 block content

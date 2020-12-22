@@ -55,7 +55,7 @@ const routes = [
       await User.query().deleteById(req.user.id);
       req.logOut();
       req.flash('flash', [{ type: 'success', text: i18next.t('user.action.delete.success') }]);
-      res.redirect('/');
+      res.redirect('/users');
     },
   },
   {
@@ -84,7 +84,7 @@ const routes = [
       return User.query().insert(userData)
         .then(() => {
           req.flash('flash', [{ type: 'success', text: i18next.t('signup.success') }]);
-          return res.redirect('/session/new');
+          return res.redirect('/');
         })
         .catch((err) => {
           if (err instanceof UniqueViolationError) {
