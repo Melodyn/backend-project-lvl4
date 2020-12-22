@@ -45,10 +45,10 @@ export default {
         not_found: 'пользователь с почтой "{{ email }}" отсутствует',
         password: 'неправильный пароль',
       },
-      success: 'добро пожаловать, иди двигать таски',
+      success: 'Вы залогинены',
     },
     signout: {
-      success: 'уходя уходи',
+      success: 'Вы разлогинены',
     },
     signup: {
       error: {
