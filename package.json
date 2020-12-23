@@ -9,7 +9,7 @@
     "build": "webpack --config webpack.config.cjs",
     "heroku-postbuild": "echo 'ok'",
     "build-frontend": "echo 'ok'",
-    "test": "jest --colors --detectOpenHandles"
+    "test": "jest tasks --colors --detectOpenHandles"
   },
   "bin": {
     "task-manager": "./bin/index.js"

@@ -1,7 +1,8 @@
 import Objection from 'objection';
 import i18next from 'i18next';
+import yup from 'yup';
 import * as fastifyPass from 'fastify-passport';
-import { Task, taskValidator } from '../models/Task.js';
+import { Task, taskValidator, taskFields } from '../models/Task.js';
 import { Status } from '../models/Status.js';
 import { User } from '../models/User.js';
 
@@ -79,6 +80,7 @@ const routes = [
     handler: async (req, res) => {
       const isValid = await taskValidator
         .isValid(req.body.data, { abortEarly: false });
+      req.body.data.creatorId = req.user.id;
 
       if (!isValid) {
         req.flash('flash', [{ type: 'warning', text: i18next.t('task.action.create.error') }]);
@@ -95,6 +97,7 @@ const routes = [
             req.flash('flash', [{ type: 'warning', text: i18next.t('task.action.create.error') }]);
             return res.redirect('/tasks');
           }
+          req.log.error(err);
           req.flash('flash', [{ type: 'error', text: err.message }]);
           return res.redirect('/');
         });
@@ -110,8 +113,13 @@ const routes = [
       }
     }),
     handler: async (req, res) => {
-      const isValid = await taskValidator
-        .isValid(req.body.data, { abortEarly: false });
+      const isValid = await yup.object({
+        ...taskFields,
+        name: taskFields.name.optional(),
+        statusId: taskFields.statusId.optional(),
+      }).required()
+        .unknown(false)
+        .isValid(req.body.data);
 
       if (!isValid) {
         req.flash('flash', [{ type: 'warning', text: i18next.t('task.action.edit.error') }]);
@@ -124,6 +132,7 @@ const routes = [
             req.flash('flash', [{ type: 'warning', text: i18next.t('task.action.edit.error') }]);
             return res.redirect('/tasks');
           }
+          req.log.error(err);
           req.flash('flash', [{ type: 'error', text: err.message }]);
           return res.redirect('/');
         });
