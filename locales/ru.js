@@ -11,11 +11,12 @@ export default {
       },
     },
     nav: {
-      users: 'Пользователи',
-      statuses: 'Статусы',
       signin: 'Вход',
       signout: 'Выход',
       signup: 'Регистрация',
+      users: 'Пользователи',
+      tasks: 'Задачи',
+      statuses: 'Статусы',
     },
     signin: {
       error: {
@@ -85,6 +86,37 @@ export default {
         create: {
           error: 'Невозможно создать статус',
           success: 'Статус успешно создан',
+        },
+      },
+    },
+    task: {
+      field: {
+        id: 'id',
+        name: 'Наименование',
+        description: 'Описание',
+        status: 'Статус',
+        creator: 'Автор',
+        executor: 'Исполнитель',
+        labels: 'Метки',
+      },
+      button: {
+        create: 'Создать задачу',
+        edit: 'Изменить',
+        save: 'Создать',
+        delete: 'Удалить',
+      },
+      action: {
+        delete: {
+          error: 'Невозможно удалить задачу',
+          success: 'Задача успешно удалена',
+        },
+        edit: {
+          error: 'Невозможно редактировать задачу',
+          success: 'Задача успешно изменена',
+        },
+        create: {
+          error: 'Невозможно создать задачу',
+          success: 'Задача успешно создана',
         },
       },
     },

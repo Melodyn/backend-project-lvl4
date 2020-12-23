@@ -20,7 +20,6 @@ mixin formBody(isEditPage)
               'is-invalid': errors.description
             }
             name='data[description]'
-            type='text'
             value=values.description
             rows=3
         )
@@ -35,7 +34,7 @@ mixin formBody(isEditPage)
             value=values.status
             required
         )
-            option
+            option #{values.status}
             each status in statuses
               option(value=status.id) #{status.name}
         .invalid-feedback #{errors.status}
@@ -47,9 +46,8 @@ mixin formBody(isEditPage)
             }
             name='data[executorId]'
             value=values.executor
-            required
         )
-            option
+            option #{values.executor}
             each executor in executors
               option(value=executor.id) #{executor.firstName} #{executor.lastName}
         .invalid-feedback #{errors.executor}
@@ -63,7 +61,7 @@ mixin formBody(isEditPage)
             value=values.labels
             multiply
         )
-            option
+            option #{values.label}
             each label in labels
               option(value=label.id) #{label.name}
         .invalid-feedback #{errors.labels}

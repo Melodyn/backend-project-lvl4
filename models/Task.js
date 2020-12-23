@@ -1,23 +1,50 @@
 import * as yup from 'yup';
 import objection from 'objection';
+import { User } from './User.js';
+import { Status } from './Status.js';
 
-const { Model, snakeCaseMappers } = objection;
+const { Model } = objection;
 
 export class Task extends Model {
   static get tableName() {
     return 'tasks';
   }
 
-  static get columnNameMappers() {
-    return snakeCaseMappers();
+  static get relationMappings() {
+    return {
+      status: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: Status,
+        join: {
+          from: 'tasks.statusId',
+          to: 'statuses.id',
+        },
+      },
+      creator: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: User,
+        join: {
+          from: 'tasks.creatorId',
+          to: 'users.id',
+        },
+      },
+      executor: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: User,
+        join: {
+          from: 'tasks.executorId',
+          to: 'users.id',
+        },
+      },
+    };
   }
 }
 
 export const taskFields = {
   name: yup.string().min(1).required(),
   description: yup.string().default('').optional(),
-  statusId: yup.number().min(1).required(),
-  executorId: yup.number().min(1).optional(),
+  statusId: yup.string().matches(/\d+/).required(),
+  executorId: yup.string().matches(/\d*/).optional(),
 };
 
 export const taskValidator = yup.object(taskFields).unknown(false).required();

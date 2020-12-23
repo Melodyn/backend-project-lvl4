@@ -4,14 +4,14 @@ exports.up = function up(knex) {
     tableBuilder.string('name', 255).unique().notNullable();
     tableBuilder.string('description', 255).defaultTo('');
 
-    tableBuilder.integer('status_id').unsigned().notNullable();
-    tableBuilder.foreign('status_id').references('id').inTable('statuses');
+    tableBuilder.integer('statusId').unsigned().notNullable();
+    tableBuilder.foreign('statusId').references('id').inTable('statuses');
 
-    tableBuilder.integer('creator_id').unsigned().notNullable();
-    tableBuilder.foreign('creator_id').references('id').inTable('users');
+    tableBuilder.integer('creatorId').unsigned().notNullable();
+    tableBuilder.foreign('creatorId').references('id').inTable('users');
 
-    tableBuilder.integer('executor_id').unsigned();
-    tableBuilder.foreign('executor_id').references('id').inTable('users');
+    tableBuilder.integer('executorId').unsigned();
+    tableBuilder.foreign('executorId').references('id').inTable('users');
 
     tableBuilder.timestamps(true, true);
   });

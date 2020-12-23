@@ -1,4 +1,4 @@
-import Objection from 'objection';
+import Objection, { val } from 'objection';
 import i18next from 'i18next';
 import yup from 'yup';
 import * as fastifyPass from 'fastify-passport';
@@ -49,7 +49,21 @@ const routes = [
     method: 'GET',
     url: '/tasks',
     handler: async (req, res) => {
-      const tasks = await Task.query().where(req.query);
+      const tasks = await Task.query()
+        .select(
+          'tasks.*',
+          'status.name as statusName',
+          'creator.firstName as creatorFirstName',
+          'creator.lastName as creatorLastName',
+          'executor.firstName as executorFirstName',
+          'executor.lastName as executorLastName',
+        )
+        .leftJoinRelated({
+          creator: true,
+          executor: true,
+          status: true,
+        })
+        .where(req.query);
       res.view('tasks', { path: 'tasks', tasks });
     },
   },
@@ -80,14 +94,18 @@ const routes = [
     handler: async (req, res) => {
       const isValid = await taskValidator
         .isValid(req.body.data, { abortEarly: false });
-      req.body.data.creatorId = req.user.id;
 
       if (!isValid) {
         req.flash('flash', [{ type: 'warning', text: i18next.t('task.action.create.error') }]);
         return res.redirect('/tasks');
       }
 
-      return Task.query().insert(req.body.data)
+      const filledFields = Object.fromEntries(Object
+        .entries(req.body.data)
+        .filter(([, value]) => !!value));
+      filledFields.creatorId = req.user.id;
+
+      return Task.query().insert(filledFields)
         .then(() => {
           req.flash('flash', [{ type: 'success', text: i18next.t('task.action.create.success') }]);
           return res.redirect('/tasks');

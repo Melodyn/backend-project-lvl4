@@ -7,7 +7,7 @@ block content
             th= t('task.field.id')
             th= t('task.field.name')
             th= t('task.field.status')
-            th= t('task.field.author')
+            th= t('task.field.creator')
             th= t('task.field.executor')
             th
         tbody
@@ -15,9 +15,9 @@ block content
           tr
             td #{task.id}
             td #{task.name}
-            td #{task.status}
-            td #{task.author}
-            td #{task.executor}
+            td #{task.statusName}
+            td #{task.creatorFirstName} #{task.creatorLastName}
+            td= (task.executorId ? `${task.executorFirstName} ${task.executorLastName}` : '')
             td
                 a.btn.btn-link.text-warning(href=`/tasks/${task.id}/edit`)= t('task.button.edit')
                 form(action=`/tasks/${task.id}` method='post')
