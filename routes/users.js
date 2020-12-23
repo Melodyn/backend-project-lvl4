@@ -1,4 +1,3 @@
-import { constants } from 'http2';
 import Objection from 'objection';
 import * as yup from 'yup';
 import _ from 'lodash';

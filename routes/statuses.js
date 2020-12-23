@@ -1,5 +1,4 @@
 import Objection from 'objection';
-import _ from 'lodash';
 import i18next from 'i18next';
 import * as fastifyPass from 'fastify-passport';
 import { Status, statusValidator } from '../models/Status.js';
