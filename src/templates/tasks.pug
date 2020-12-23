@@ -1,0 +1,25 @@
+extends layout
+
+block content
+    a.btn.btn-light.ml-auto.mb-4(href='/tasks/new')= t('task.button.create')
+    table.table.table-dark.table-striped.table-hover
+        tr
+            th= t('task.field.id')
+            th= t('task.field.name')
+            th= t('task.field.status')
+            th= t('task.field.author')
+            th= t('task.field.executor')
+            th
+        tbody
+        each task in tasks
+          tr
+            td #{task.id}
+            td #{task.name}
+            td #{task.status}
+            td #{task.author}
+            td #{task.executor}
+            td
+                a.btn.btn-link.text-warning(href=`/tasks/${task.id}/edit`)= t('task.button.edit')
+                form(action=`/tasks/${task.id}` method='post')
+                    input(type='hidden' name='_method' value='delete')
+                    input.btn.btn-link.text-danger(type='submit' value= t('task.button.delete'))

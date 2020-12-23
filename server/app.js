@@ -43,7 +43,8 @@ const fastifyPassport = fastifyPass.default.default || fastifyPass.default;
  */
 const initDatabase = (config) => {
   const {
-    DB_TYPE, DB_NAME, DB_USER, DB_PASS, DB_HOST, DB_PORT, NODE_ENV,
+    DB_TYPE, DB_NAME, DB_USER, DB_PASS, DB_HOST, DB_PORT,
+    NODE_ENV, LOG_LEVEL,
   } = config;
 
   const databaseConnectionsByEnv = {
@@ -63,6 +64,7 @@ const initDatabase = (config) => {
 
   const db = knex({
     client: DB_TYPE,
+    debug: LOG_LEVEL === 'debug',
     connection: databaseConnectionsByEnv[NODE_ENV],
     useNullAsDefault: true,
     migrations: {

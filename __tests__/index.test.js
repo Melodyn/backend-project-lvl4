@@ -20,6 +20,9 @@ test.each([
   '/statuses',
   '/statuses/new',
   '/statuses/0/edit',
+  '/tasks',
+  '/tasks/new',
+  '/tasks/0/edit',
 ])('Click pages %s', async (page) => {
   const response = await app.server.inject({
     method: 'GET',

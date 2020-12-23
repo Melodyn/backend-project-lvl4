@@ -1,4 +1,3 @@
-import { promises as fs } from 'fs';
 import { constants } from 'http2';
 import createApp from '../server/index.js';
 import users from '../__fixtures__/users';
