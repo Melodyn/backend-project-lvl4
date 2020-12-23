@@ -2,7 +2,7 @@ extends layout
 
 mixin formBody(isEditPage)
     .form-group
-        label(for='data_name')= t('status.field.name')
+        label(for='data_name')= t('task.field.name')
         input#data_name.form-control(
             class={
               'is-invalid': errors.name
@@ -13,15 +13,69 @@ mixin formBody(isEditPage)
             required
         )
         .invalid-feedback #{errors.name}
-    input.btn.btn-primary(type='submit' value= t(isEditPage ? 'status.button.edit' : 'status.button.save'))
+    .form-group
+        label(for='data_description')= t('task.field.description')
+        textarea#data_description.form-control(
+            class={
+              'is-invalid': errors.description
+            }
+            name='data[description]'
+            type='text'
+            value=values.description
+            rows=3
+        )
+        .invalid-feedback #{errors.description}
+    .form-group
+        label(for='data_statusId')= t('task.field.status')
+        select#data_statusId.form-control(
+            class={
+              'is-invalid': errors.status
+            }
+            name='data[statusId]'
+            value=values.status
+            required
+        )
+            option
+            each status in statuses
+              option(value=status.id) #{status.name}
+        .invalid-feedback #{errors.status}
+    .form-group
+        label(for='data_executorId')= t('task.field.executor')
+        select#data_statusId.form-control(
+            class={
+              'is-invalid': errors.executor
+            }
+            name='data[executorId]'
+            value=values.executor
+            required
+        )
+            option
+            each executor in executors
+              option(value=executor.id) #{executor.firstName} #{executor.lastName}
+        .invalid-feedback #{errors.executor}
+    .form-group
+        label(for='data_labels')= t('task.field.labels')
+        select#data_labels.form-control(
+            class={
+              'is-invalid': errors.labels
+            }
+            name='data[labels]'
+            value=values.labels
+            multiply
+        )
+            option
+            each label in labels
+              option(value=label.id) #{label.name}
+        .invalid-feedback #{errors.labels}
+    input.btn.btn-primary(type='submit' value= t(isEditPage ? 'task.button.edit' : 'task.button.save'))
 
 
 block content
     - const isEditPage = path.includes('edit');
     if (isEditPage)
-        form(method='post' action=`/statuses/${values.id}`)
+        form(method='post' action=`/tasks/${values.id}`)
             input(type='hidden' name='_method' value='patch')
             +formBody(isEditPage)
     else
-        form(method='post' action='/statuses')
+        form(method='post' action='/tasks')
             +formBody(isEditPage)

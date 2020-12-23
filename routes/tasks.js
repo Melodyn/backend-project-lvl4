@@ -2,6 +2,8 @@ import Objection from 'objection';
 import i18next from 'i18next';
 import * as fastifyPass from 'fastify-passport';
 import { Task, taskValidator } from '../models/Task.js';
+import { Status } from '../models/Status.js';
+import { User } from '../models/User.js';
 
 const fastifyPassport = fastifyPass.default.default || fastifyPass.default;
 const { UniqueViolationError } = Objection;
@@ -33,8 +35,13 @@ const routes = [
         res.redirect('/tasks');
       }
     }),
-    handler: (req, res) => {
-      res.view('tasksForm', { path: 'tasks/new' });
+    handler: async (req, res) => {
+      const statuses = await Status.query();
+      const executors = await User.query();
+      const labels = [];
+      res.view('tasksForm', {
+        path: 'tasks/new', statuses, executors, labels,
+      });
     },
   },
   {
