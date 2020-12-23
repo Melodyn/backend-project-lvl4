@@ -20,9 +20,8 @@ mixin formBody(isEditPage)
               'is-invalid': errors.description
             }
             name='data[description]'
-            value=values.description
             rows=3
-        )
+        ) #{values.description}
         .invalid-feedback #{errors.description}
     .form-group
         label(for='data_statusId')= t('task.field.status')
@@ -34,7 +33,7 @@ mixin formBody(isEditPage)
             value=values.status
             required
         )
-            option #{values.status}
+            option(value=values.statusId) #{values.statusName}
             each status in statuses
               option(value=status.id) #{status.name}
         .invalid-feedback #{errors.status}
@@ -45,9 +44,8 @@ mixin formBody(isEditPage)
               'is-invalid': errors.executor
             }
             name='data[executorId]'
-            value=values.executor
         )
-            option #{values.executor}
+            option(value=values.executorId)= (values.executorId ? `${values.executorFirstName} ${values.executorLastName}` : '')
             each executor in executors
               option(value=executor.id) #{executor.firstName} #{executor.lastName}
         .invalid-feedback #{errors.executor}
@@ -58,7 +56,6 @@ mixin formBody(isEditPage)
               'is-invalid': errors.labels
             }
             name='data[labels]'
-            value=values.labels
             multiply
         )
             option #{values.label}

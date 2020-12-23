@@ -23,8 +23,29 @@ const routes = [
       }
     }),
     handler: async (req, res) => {
-      const task = await Task.query().findById(req.params.id);
-      res.view('tasksForm', { path: 'tasks/edit', values: task });
+      const task = await Task.query()
+        .select(
+          'tasks.*',
+          'status.name as statusName',
+          'creator.firstName as creatorFirstName',
+          'creator.lastName as creatorLastName',
+          'executor.firstName as executorFirstName',
+          'executor.lastName as executorLastName',
+        )
+        .leftJoinRelated({
+          creator: true,
+          executor: true,
+          status: true,
+        })
+        .findById(req.params.id);
+
+      const statuses = await Status.query();
+      const executors = await User.query();
+      const labels = [];
+
+      return res.view('tasksForm', {
+        path: 'tasks/edit', values: task, statuses, executors, labels,
+      });
     },
   },
   {
@@ -144,7 +165,11 @@ const routes = [
         return res.redirect('/tasks');
       }
 
-      await Task.query().update(req.body.data).where({ id: req.params.id })
+      const filledFields = Object.fromEntries(Object
+        .entries(req.body.data)
+        .filter(([, value]) => !!value));
+
+      await Task.query().update(filledFields).where({ id: req.params.id })
         .catch((err) => {
           if (err instanceof UniqueViolationError) {
             req.flash('flash', [{ type: 'warning', text: i18next.t('task.action.edit.error') }]);
