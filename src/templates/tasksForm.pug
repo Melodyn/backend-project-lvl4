@@ -30,10 +30,9 @@ mixin formBody(isEditPage)
               'is-invalid': errors.status
             }
             name='data[statusId]'
-            value=values.status
             required
         )
-            option(value=values.statusId) #{values.statusName}
+            option(value=values.statusId) #{values.statusId ? values.status.name : ''}
             each status in statuses
               option(value=status.id) #{status.name}
         .invalid-feedback #{errors.status}
@@ -45,9 +44,9 @@ mixin formBody(isEditPage)
             }
             name='data[executorId]'
         )
-            option(value=values.executorId)= (values.executorId ? `${values.executorFirstName} ${values.executorLastName}` : '')
+            option(value=values.executorId)= (values.executorId ? `${values.executor.fullName()}` : '')
             each executor in executors
-              option(value=executor.id) #{executor.firstName} #{executor.lastName}
+              option(value=executor.id) #{executor.fullName()}
         .invalid-feedback #{errors.executor}
     .form-group
         label(for='data_labels')= t('task.field.labels')

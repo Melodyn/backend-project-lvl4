@@ -11,7 +11,7 @@ block content
         each user in users
           tr
             td #{user.id}
-            td #{user.firstName} #{user.lastName}
+            td #{user.fullName()}
             td #{user.email}
             td
                 a.btn.btn-link.text-warning(href=`/users/${user.id}/edit`)= t('user.button.edit')

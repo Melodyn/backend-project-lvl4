@@ -23,20 +23,7 @@ const routes = [
       }
     }),
     handler: async (req, res) => {
-      const task = await Task.query()
-        .select(
-          'tasks.*',
-          'status.name as statusName',
-          'creator.firstName as creatorFirstName',
-          'creator.lastName as creatorLastName',
-          'executor.firstName as executorFirstName',
-          'executor.lastName as executorLastName',
-        )
-        .leftJoinRelated({
-          creator: true,
-          executor: true,
-          status: true,
-        })
+      const task = await Task.query().withGraphFetched('[status, creator, executor]')
         .findById(req.params.id);
 
       const statuses = await Status.query();
@@ -70,21 +57,7 @@ const routes = [
     method: 'GET',
     url: '/tasks',
     handler: async (req, res) => {
-      const tasks = await Task.query()
-        .select(
-          'tasks.*',
-          'status.name as statusName',
-          'creator.firstName as creatorFirstName',
-          'creator.lastName as creatorLastName',
-          'executor.firstName as executorFirstName',
-          'executor.lastName as executorLastName',
-        )
-        .leftJoinRelated({
-          creator: true,
-          executor: true,
-          status: true,
-        })
-        .where(req.query);
+      const tasks = await Task.query().withGraphFetched('[status, creator, executor]');
       res.view('tasks', { path: 'tasks', tasks });
     },
   },

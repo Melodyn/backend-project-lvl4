@@ -15,9 +15,9 @@ block content
           tr
             td #{task.id}
             td #{task.name}
-            td #{task.statusName}
-            td #{task.creatorFirstName} #{task.creatorLastName}
-            td= (task.executorId ? `${task.executorFirstName} ${task.executorLastName}` : '')
+            td #{task.status.name}
+            td #{task.creator.fullName()}
+            td= (task.executorId ? task.executor.fullName() : '')
             td
                 a.btn.btn-link.text-warning(href=`/tasks/${task.id}/edit`)= t('task.button.edit')
                 form(action=`/tasks/${task.id}` method='post')

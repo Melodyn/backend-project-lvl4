@@ -17,6 +17,10 @@ export class User extends Model {
     });
   }
 
+  fullName() {
+    return `${this.firstName} ${this.lastName}`;
+  }
+
   static beforeInsert(queryContext) {
     this.hashHook(queryContext);
   }
