@@ -1,5 +1,6 @@
-import Objection, { val } from 'objection';
+import Objection from 'objection';
 import i18next from 'i18next';
+import _ from 'lodash';
 import yup from 'yup';
 import * as fastifyPass from 'fastify-passport';
 import { Task, taskValidator, taskFields } from '../models/Task.js';
@@ -57,7 +58,12 @@ const routes = [
     method: 'GET',
     url: '/tasks',
     handler: async (req, res) => {
-      const tasks = await Task.query().withGraphFetched('[status, creator, executor]');
+      const query = req.query || {};
+      const tasks = await Task.query()
+        .modify('query.isCreatorUser', query.isCreatorUser ? req.user.id : null)
+        .modify('query.status', query.status)
+        .modify('query.executor', query.executor)
+        .withGraphFetched('[status, creator, executor]');
       res.view('tasks', { path: 'tasks', tasks });
     },
   },

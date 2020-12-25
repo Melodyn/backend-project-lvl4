@@ -10,6 +10,20 @@ export class Task extends Model {
     return 'tasks';
   }
 
+  static get modifiers() {
+    return {
+      'query.isCreatorUser': (query, creatorId) => {
+        if (creatorId) query.andWhere({ creatorId });
+      },
+      'query.status': (query, statusId) => {
+        if (statusId) query.andWhere({ statusId });
+      },
+      'query.executor': (query, executorId) => {
+        if (executorId) query.andWhere({ executorId });
+      },
+    };
+  }
+
   static get relationMappings() {
     return {
       status: {
