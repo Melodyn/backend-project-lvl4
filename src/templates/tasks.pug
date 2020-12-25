@@ -1,7 +1,40 @@
 extends layout
 
 block content
-    a.btn.btn-light.ml-auto.mb-4(href='/tasks/new')= t('task.button.create')
+
+    form.form-inline.mb-4(action='/tasks', method='get')
+        .col-auto.form-group
+            label(for='data_status')= t('task.field.status')
+            select#data_status.form-control.ml-2(
+                name='status'
+            )
+                option
+                  each status in statuses
+                      option(value=status.id selected=(query.status === status.id.toString())) #{status.name}
+        .col-auto.form-group
+            label(for='data_executors')= t('task.field.executor')
+            select#data_executors.form-control.ml-2(
+                name='executor'
+            )
+                option
+                  each executor in executors
+                      option(value=executor.id selected=(query.executor === executor.id.toString())) #{executor.fullName()}
+        .col-auto.form-group
+            label(for='data_label')= t('task.field.label')
+            select#data_label.form-control.ml-2(
+                name='label'
+            )
+                option
+                  each label in labels
+                      option(value=label.id selected=(query.label === label.id.toString())) #{label.name}
+        .col-auto.form-group.form-check
+            input#data_isCreatorUser.form-check-input(type='checkbox' name='isCreatorUser' checked=query.isCreatorUser)
+            label.form-check-label(for='data_isCreatorUser')= t('task.field.isCreatorUser')
+        .col-auto.form-group
+            input.btn.btn-primary.col-auto(type='submit', value= t('task.button.show'))
+
+        a.btn.btn-light.ml-auto(href='/tasks/new')= t('task.button.create')
+
     table.table.table-dark.table-striped.table-hover
         tr
             th= t('task.field.id')

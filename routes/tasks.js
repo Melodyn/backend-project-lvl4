@@ -64,7 +64,13 @@ const routes = [
         .modify('query.status', query.status)
         .modify('query.executor', query.executor)
         .withGraphFetched('[status, creator, executor]');
-      res.view('tasks', { path: 'tasks', tasks });
+      console.log(query);
+      const statuses = await Status.query();
+      const executors = await User.query();
+      const labels = [];
+      res.view('tasks', {
+        path: 'tasks', tasks, statuses, executors, labels, query,
+      });
     },
   },
   {

@@ -97,13 +97,16 @@ export default {
         status: 'Статус',
         creator: 'Автор',
         executor: 'Исполнитель',
+        label: 'Метка',
         labels: 'Метки',
+        isCreatorUser: 'Только мои задачи',
       },
       button: {
         create: 'Создать задачу',
         edit: 'Изменить',
         save: 'Создать',
         delete: 'Удалить',
+        show: 'Показать',
       },
       action: {
         delete: {
