@@ -1,4 +1,3 @@
-import { promises as fs } from 'fs';
 import createApp from '../server/index.js';
 
 let app;
@@ -22,6 +21,7 @@ test.each([
   '/statuses/0/edit',
   '/tasks',
   '/tasks/new',
+  '/tasks/0',
   '/tasks/0/edit',
 ])('Click pages %s', async (page) => {
   const response = await app.server.inject({

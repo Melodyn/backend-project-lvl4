@@ -32,21 +32,21 @@ mixin formBody(isEditPage)
             name='data[statusId]'
             required
         )
-            option(value=values.statusId) #{values.statusId ? values.status.name : ''}
+            option
             each status in statuses
-              option(value=status.id) #{status.name}
+              option(value=status.id selected=(values.statusId === status.id)) #{status.name}
         .invalid-feedback #{errors.status}
     .form-group
         label(for='data_executorId')= t('task.field.executor')
-        select#data_statusId.form-control(
+        select#data_executorId.form-control(
             class={
               'is-invalid': errors.executor
             }
             name='data[executorId]'
         )
-            option(value=values.executorId)= (values.executorId ? `${values.executor.fullName()}` : '')
+            option
             each executor in executors
-              option(value=executor.id) #{executor.fullName()}
+              option(value=executor.id selected=(values.executorId === executor.id)) #{executor.fullName()}
         .invalid-feedback #{errors.executor}
     .form-group
         label(for='data_labels')= t('task.field.labels')
@@ -57,9 +57,9 @@ mixin formBody(isEditPage)
             name='data[labels]'
             multiply
         )
-            option #{values.label}
+            option
             each label in labels
-              option(value=label.id) #{label.name}
+              option(value=label.id selected=(values.labelId = label.id)) #{label.name}
         .invalid-feedback #{errors.labels}
     input.btn.btn-primary(type='submit' value= t(isEditPage ? 'task.button.edit' : 'task.button.save'))
 

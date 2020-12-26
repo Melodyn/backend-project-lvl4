@@ -1,0 +1,27 @@
+extends layout
+
+block content
+
+    .card.bg-dark
+        .card-body
+            h2.card-title #{task.name}
+            p.card-text #{task.description}
+            table.table.table-dark
+                tbody
+                    tr
+                        td= t('task.field.creator')
+                        td #{task.creator.fullName()}
+                    tr
+                        td= t('task.field.executor')
+                        td #{task.executor.fullName()}
+                    tr
+                        td= t('task.field.status')
+                        td #{task.status.name}
+                    tr
+                        td= t('task.field.labels')
+                        td
+            hr
+            form.form-inline.ml-auto(action=`/tasks/${task.id}` method='post')
+                input(type='hidden' name='_method' value='delete')
+                a.btn.btn-warning(href=`/tasks/${task.id}/edit`)= t('task.button.edit')
+                input.btn.btn-danger.ml-4(type='submit' value= t('task.button.delete'))

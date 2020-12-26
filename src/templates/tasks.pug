@@ -47,7 +47,8 @@ block content
         each task in tasks
           tr
             td #{task.id}
-            td #{task.name}
+            td
+              a.text-info(href=`/tasks/${task.id}`) #{task.name}
             td #{task.status.name}
             td #{task.creator.fullName()}
             td= (task.executorId ? task.executor.fullName() : '')

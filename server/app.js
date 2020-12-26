@@ -64,7 +64,7 @@ const initDatabase = (config) => {
 
   const db = knex({
     client: DB_TYPE,
-    debug: LOG_LEVEL === 'debug',
+    // debug: LOG_LEVEL === 'debug',
     connection: databaseConnectionsByEnv[NODE_ENV],
     useNullAsDefault: true,
     migrations: {
