@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import qs from 'querystring';
 
 const formFieldRegex = new RegExp('data\\[(?<field>.+)\\]');

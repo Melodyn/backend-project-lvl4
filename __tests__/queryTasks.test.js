@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import qs from 'querystring';
 import users from '../__fixtures__/users.js';
 import tasks from '../__fixtures__/tasks.js';
