@@ -24,8 +24,9 @@ html(lang='ru')
                 nav.nav.nav-masthead.justify-content-center
                     a.nav-link(class={ active: path === 'users' } href='/users')= t('nav.users')
                     if user.isAuthenticated
-                        a.nav-link(class={ active: path === 'statuses' } href='/statuses')= t('nav.statuses')
                         a.nav-link(class={ active: path === 'tasks' } href='/tasks')= t('nav.tasks')
+                        a.nav-link(class={ active: path === 'statuses' } href='/statuses')= t('nav.statuses')
+                        a.nav-link(class={ active: path === 'labels' } href='/labels')= t('nav.labels')
                         form(action='/session' method='post')
                             input(type='hidden' name='_method' value='delete')
                             input.btn.btn-outline-light.ml-4(type='submit' value= t('nav.signout'))

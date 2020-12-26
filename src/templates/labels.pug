@@ -1,0 +1,21 @@
+extends layout
+
+block content
+    a.btn.btn-light.ml-auto.mb-4(href='/labels/new')= t('label.button.create')
+    table.table.table-dark.table-striped.table-hover
+        tr
+            th= t('label.field.id')
+            th= t('label.field.name')
+            th= t('label.field.createdAt')
+            th
+        tbody
+        each label in labels
+          tr
+            td #{label.id}
+            td #{label.name}
+            td #{label.created_at}
+            td
+                a.btn.btn-link.text-warning(href=`/labels/${label.id}/edit`)= t('label.button.edit')
+                form(action=`/labels/${label.id}` method='post')
+                    input(type='hidden' name='_method' value='delete')
+                    input.btn.btn-link.text-danger(type='submit' value= t('label.button.delete'))

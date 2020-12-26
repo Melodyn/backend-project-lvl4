@@ -1,0 +1,27 @@
+extends layout
+
+mixin formBody(isEditPage)
+    .form-group
+        label(for='data_name')= t('label.field.name')
+        input#data_name.form-control(
+            class={
+              'is-invalid': errors.name
+            }
+            name='data[name]'
+            type='text'
+            value=values.name
+            required
+        )
+        .invalid-feedback #{errors.name}
+    input.btn.btn-primary(type='submit' value= t(isEditPage ? 'label.button.edit' : 'label.button.save'))
+
+
+block content
+    - const isEditPage = path.includes('edit');
+    if (isEditPage)
+        form(method='post' action=`/labels/${values.id}`)
+            input(type='hidden' name='_method' value='patch')
+            +formBody(isEditPage)
+    else
+        form(method='post' action='/labels')
+            +formBody(isEditPage)
