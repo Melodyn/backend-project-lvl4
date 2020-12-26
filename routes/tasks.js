@@ -6,6 +6,7 @@ import * as fastifyPass from 'fastify-passport';
 import { Task, taskValidator, taskFields } from '../models/Task.js';
 import { Status } from '../models/Status.js';
 import { User } from '../models/User.js';
+import { Label } from '../models/Label.js';
 
 const fastifyPassport = fastifyPass.default.default || fastifyPass.default;
 const { UniqueViolationError } = Objection;
@@ -24,12 +25,13 @@ const routes = [
       }
     }),
     handler: async (req, res) => {
-      const task = await Task.query().withGraphFetched('[status, creator, executor]')
+      const task = await Task.query()
+        .withGraphFetched('[status, creator, executor, labels]')
         .findById(req.params.id);
 
       const statuses = await Status.query();
       const executors = await User.query();
-      const labels = [];
+      const labels = await Label.query();
 
       return res.view('tasksForm', {
         path: 'tasks/edit', values: task, statuses, executors, labels,
@@ -48,7 +50,7 @@ const routes = [
     handler: async (req, res) => {
       const statuses = await Status.query();
       const executors = await User.query();
-      const labels = [];
+      const labels = await Label.query();
       res.view('tasksForm', {
         path: 'tasks/new', statuses, executors, labels,
       });
@@ -65,14 +67,20 @@ const routes = [
     }),
     handler: async (req, res) => {
       const query = req.query || {};
-      const tasks = await Task.query()
+      const tasksBase = Task.query()
         .modify('query.isCreatorUser', query.isCreatorUser ? req.user.id : null)
         .modify('query.status', query.status)
-        .modify('query.executor', query.executor)
-        .withGraphFetched('[status, creator, executor]');
+        .modify('query.executor', query.executor);
+      const extra = query.label
+        ? tasksBase.whereExists(
+          Task.relatedQuery('labels').where('labelId', query.label),
+        )
+        : tasksBase;
+      const tasks = await extra.withGraphFetched('[status, creator, executor, labels]');
+
       const statuses = await Status.query();
       const executors = await User.query();
-      const labels = [];
+      const labels = await Label.query();
       res.view('tasks', {
         path: 'tasks', tasks, statuses, executors, labels, query,
       });
@@ -90,7 +98,8 @@ const routes = [
     handler: async (req, res) => {
       const task = await Task.query()
         .findById(req.params.id)
-        .withGraphFetched('[status, creator, executor]');
+        .withGraphFetched('[status, creator, executor, labels]');
+
       res.view('task', { path: 'tasks', task });
     },
   },
@@ -104,7 +113,11 @@ const routes = [
       }
     }),
     handler: async (req, res) => {
-      await Task.query().deleteById(req.params.id);
+      await Task.query().deleteById(req.params.id)
+        .then(() => Task
+          .relatedQuery('labels')
+          .unrelate()
+          .where('taskId', req.params.id));
       req.flash('flash', [{ type: 'success', text: i18next.t('task.action.delete.success') }]);
       res.redirect('/tasks');
     },
@@ -127,12 +140,28 @@ const routes = [
         return res.redirect('/tasks');
       }
 
-      const filledFields = Object.fromEntries(Object
+      const { labels, ...filledFields } = Object.fromEntries(Object
         .entries(req.body.data)
         .filter(([, value]) => !!value));
       filledFields.creatorId = req.user.id;
 
-      return Task.query().insert(filledFields)
+      const task = await Task.query().insert(filledFields);
+      const promises = [];
+
+      if (_.isNumber(labels) || !_.isEmpty(labels)) {
+        const withLabels = _.isArray(labels)
+          ? labels.map((id) => Task
+            .relatedQuery('labels')
+            .for(task.id)
+            .relate(id))
+          : [Task
+            .relatedQuery('labels')
+            .for(task.id)
+            .relate(labels)];
+        promises.push(Promise.all(withLabels));
+      }
+
+      return Promise.all(promises)
         .then(() => {
           req.flash('flash', [{ type: 'success', text: i18next.t('task.action.create.success') }]);
           return res.redirect('/tasks');
@@ -171,16 +200,44 @@ const routes = [
         return res.redirect('/tasks');
       }
 
-      const filledFields = Object.fromEntries(Object
-        .entries(req.body.data)
-        .filter(([, value]) => !!value));
+      const filledFields = req.body.data;
+      const promises = [];
 
-      await Task.query().update(filledFields).where({ id: req.params.id })
+      if (!_.isEmpty(filledFields.labels)) {
+        const updateRelations = Task.query().findById(req.params.id)
+          .then((task) => task
+            .$relatedQuery('labels')
+            .unrelate()
+            .where('taskId', req.params.id))
+          .then(() => {
+            if (_.isArray(filledFields.labels)) {
+              return Promise.all(filledFields.labels.map((id) => Task
+                .relatedQuery('labels')
+                .for(req.params.id)
+                .relate(id)));
+            }
+            return Task
+              .relatedQuery('labels')
+              .for(req.params.id)
+              .relate(filledFields.labels);
+          });
+        promises.push(updateRelations);
+      }
+
+      const update = Task.query().update(filledFields).where({ id: req.params.id })
         .catch((err) => {
           if (err instanceof UniqueViolationError) {
             req.flash('flash', [{ type: 'warning', text: i18next.t('task.action.edit.error') }]);
             return res.redirect('/tasks');
           }
+          req.log.error(err);
+          req.flash('flash', [{ type: 'error', text: err.message }]);
+          return res.redirect('/');
+        });
+      promises.push(update);
+
+      await Promise.all(promises)
+        .catch((err) => {
           req.log.error(err);
           req.flash('flash', [{ type: 'error', text: err.message }]);
           return res.redirect('/');

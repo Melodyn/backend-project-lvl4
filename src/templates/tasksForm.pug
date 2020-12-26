@@ -55,11 +55,11 @@ mixin formBody(isEditPage)
               'is-invalid': errors.labels
             }
             name='data[labels]'
-            multiply
+            multiple
         )
-            option
+            - const activeLabels = (values.labels || []).map(({ id }) => id);
             each label in labels
-              option(value=label.id selected=(values.labelId = label.id)) #{label.name}
+              option(value=label.id selected=activeLabels.includes(label.id)) #{label.name}
         .invalid-feedback #{errors.labels}
     input.btn.btn-primary(type='submit' value= t(isEditPage ? 'task.button.edit' : 'task.button.save'))
 

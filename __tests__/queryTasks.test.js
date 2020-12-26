@@ -2,10 +2,12 @@ import qs from 'querystring';
 import users from '../__fixtures__/users.js';
 import tasks from '../__fixtures__/tasks.js';
 import statuses from '../__fixtures__/statuses.js';
+import labels from '../__fixtures__/labels.js';
 import { Task } from '../models/Task.js';
 import { Status } from '../models/Status';
 import { User } from '../models/User';
 import createApp from '../server/index.js';
+import { Label } from '../models/Label';
 
 let app;
 
@@ -35,6 +37,8 @@ describe('Positive cases query', () => {
 
   const fixtureFirstTask = tasks.firstTask;
   const fixtureSecondTask = tasks.secondTask;
+
+  const fixtureLabelBug = labels.bug;
 
   beforeAll(async () => {
     // sign up
@@ -71,7 +75,7 @@ describe('Positive cases query', () => {
       .findOne({ email: kittyUserFields.email })
       .then(({ id }) => id);
 
-    // create statuses
+    // create statuses and labels
     await app.server.inject({
       method: 'POST',
       url: '/statuses',
@@ -84,12 +88,20 @@ describe('Positive cases query', () => {
       payload: { data: { name: fixtureStatusToDo.name } },
       cookies: fixtureUserHello.cookies,
     });
+    await app.server.inject({
+      method: 'POST',
+      url: '/labels',
+      payload: { data: { name: fixtureLabelBug.name } },
+      cookies: fixtureUserHello.cookies,
+    });
 
     // set statuses
     const backlogStatus = await Status.query().findOne({ name: fixtureStatusBacklog.name });
     const todoStatus = await Status.query().findOne({ name: fixtureStatusToDo.name });
+    const bugLabel = await Label.query().findOne({ name: fixtureLabelBug.name });
     fixtureStatusBacklog.id = backlogStatus.id;
     fixtureStatusToDo.id = todoStatus.id;
+    fixtureLabelBug.id = bugLabel.id;
 
     // create tasks
     await app.server.inject({
@@ -99,6 +111,7 @@ describe('Positive cases query', () => {
         data: {
           name: fixtureFirstTask.name,
           statusId: fixtureStatusBacklog.id,
+          labels: fixtureLabelBug.id,
         },
       },
       cookies: fixtureUserHello.cookies,
@@ -144,8 +157,10 @@ describe('Positive cases query', () => {
 
   test('Get creator tasks', async () => {
     const query = qs.encode({
-      isCreatorUser: true,
+      isCreatorUser: 'on',
       executor: '',
+      status: '',
+      label: '',
     });
 
     const result = await app.server.inject({
@@ -158,10 +173,12 @@ describe('Positive cases query', () => {
     expect(result.payload.includes(fixtureSecondTask.name)).not.toEqual(true);
   });
 
-  test('Get status and executor', async () => {
+  test('Get by executor', async () => {
     const query = qs.encode({
       executor: fixtureUserKitty.id,
-      status: fixtureStatusToDo.id,
+      isCreatorUser: '',
+      status: '',
+      label: '',
     });
 
     const result = await app.server.inject({
@@ -172,6 +189,42 @@ describe('Positive cases query', () => {
 
     expect(result.payload.includes(fixtureFirstTask.name)).not.toEqual(true);
     expect(result.payload.includes(fixtureSecondTask.name)).toEqual(true);
+  });
+
+  test('Get by status', async () => {
+    const query = qs.encode({
+      status: fixtureStatusToDo.id,
+      isCreatorUser: '',
+      executor: '',
+      label: '',
+    });
+
+    const result = await app.server.inject({
+      method: 'GET',
+      url: `/tasks?${query}`,
+      cookies: fixtureUserHello.cookies,
+    });
+
+    expect(result.payload.includes(fixtureFirstTask.name)).not.toEqual(true);
+    expect(result.payload.includes(fixtureSecondTask.name)).toEqual(true);
+  });
+
+  test('Get by label', async () => {
+    const query = qs.encode({
+      label: `${fixtureLabelBug.id}`,
+      isCreatorUser: '',
+      executor: '',
+      status: '',
+    });
+
+    const result = await app.server.inject({
+      method: 'GET',
+      url: `/tasks?${query}`,
+      cookies: fixtureUserHello.cookies,
+    });
+
+    expect(result.payload.includes(fixtureFirstTask.name)).toEqual(true);
+    expect(result.payload.includes(fixtureSecondTask.name)).not.toEqual(true);
   });
 });
 

@@ -22,17 +22,17 @@ html(lang='ru')
                 a(href='/')
                     h3.masthead-brand= t('app.shortName')
                 nav.nav.nav-masthead.justify-content-center
-                    a.nav-link(class={ active: path === 'users' } href='/users')= t('nav.users')
+                    a.nav-link(class={ active: path.startsWith('users') } href='/users')= t('nav.users')
                     if user.isAuthenticated
-                        a.nav-link(class={ active: path === 'tasks' } href='/tasks')= t('nav.tasks')
-                        a.nav-link(class={ active: path === 'statuses' } href='/statuses')= t('nav.statuses')
-                        a.nav-link(class={ active: path === 'labels' } href='/labels')= t('nav.labels')
+                        a.nav-link(class={ active: path.startsWith('tasks') } href='/tasks')= t('nav.tasks')
+                        a.nav-link(class={ active: path.startsWith('statuses') } href='/statuses')= t('nav.statuses')
+                        a.nav-link(class={ active: path.startsWith('labels') } href='/labels')= t('nav.labels')
                         form(action='/session' method='post')
                             input(type='hidden' name='_method' value='delete')
                             input.btn.btn-outline-light.ml-4(type='submit' value= t('nav.signout'))
                     else
-                        a.nav-link(class={active: path === 'signup'} href='/users/new')= t('nav.signup')
-                        a.nav-link(class={active: path === 'signin'} href='/session/new')= t('nav.signin')
+                        a.nav-link(class={active: path.startsWith('signup')} href='/users/new')= t('nav.signup')
+                        a.nav-link(class={active: path.startsWith('signin')} href='/session/new')= t('nav.signin')
 
         each message in flash || []
             .alert(class=`alert-${message.type}`)= message.text

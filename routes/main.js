@@ -35,7 +35,7 @@ const routes = [
     method: 'GET',
     url: '/',
     handler: (req, res) => {
-      res.view('main');
+      res.view('main', { path: '/' });
     },
   },
 ];

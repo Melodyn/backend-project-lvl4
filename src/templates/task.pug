@@ -13,13 +13,13 @@ block content
                         td #{task.creator.fullName()}
                     tr
                         td= t('task.field.executor')
-                        td #{task.executor.fullName()}
+                        td #{task.executor ? task.executor.fullName() : ''}
                     tr
                         td= t('task.field.status')
                         td #{task.status.name}
                     tr
                         td= t('task.field.labels')
-                        td
+                        td #{task.labels.map(({ name }) => name).join(', ')}
             hr
             form.form-inline.ml-auto(action=`/tasks/${task.id}` method='post')
                 input(type='hidden' name='_method' value='delete')
