@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import crypto from 'crypto';
 import * as yup from 'yup';
 import objection from 'objection';
