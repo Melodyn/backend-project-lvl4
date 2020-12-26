@@ -12,8 +12,8 @@ block content
                   each status in statuses
                       option(value=status.id selected=(query.status === status.id.toString())) #{status.name}
         .col-auto.form-group
-            label(for='data_executors')= t('task.field.executor')
-            select#data_executors.form-control.ml-2(
+            label(for='data_executor')= t('task.field.executor')
+            select#data_executor.form-control.ml-2(
                 name='executor'
             )
                 option

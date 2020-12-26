@@ -1,7 +1,7 @@
 import Objection from 'objection';
 import i18next from 'i18next';
 import _ from 'lodash';
-import yup from 'yup';
+import * as yup from 'yup';
 import * as fastifyPass from 'fastify-passport';
 import { Task, taskValidator, taskFields } from '../models/Task.js';
 import { Status } from '../models/Status.js';
@@ -200,18 +200,18 @@ const routes = [
         return res.redirect('/tasks');
       }
 
-      const filledFields = req.body.data;
+      const { labels, ...filledFields } = req.body.data;
       const promises = [];
 
-      if (!_.isEmpty(filledFields.labels)) {
+      if (_.isNumber(labels) || !_.isEmpty(labels)) {
         const updateRelations = Task.query().findById(req.params.id)
           .then((task) => task
             .$relatedQuery('labels')
             .unrelate()
             .where('taskId', req.params.id))
           .then(() => {
-            if (_.isArray(filledFields.labels)) {
-              return Promise.all(filledFields.labels.map((id) => Task
+            if (_.isArray(labels)) {
+              return Promise.all(labels.map((id) => Task
                 .relatedQuery('labels')
                 .for(req.params.id)
                 .relate(id)));
@@ -219,7 +219,7 @@ const routes = [
             return Task
               .relatedQuery('labels')
               .for(req.params.id)
-              .relate(filledFields.labels);
+              .relate(labels);
           });
         promises.push(updateRelations);
       }
