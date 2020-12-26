@@ -57,6 +57,12 @@ const routes = [
   {
     method: 'GET',
     url: '/tasks',
+    preValidation: fastifyPassport.authenticate('local', {}, (req, res) => {
+      if (!(req.isAuthenticated())) {
+        req.flash('flash', [{ type: 'warning', text: i18next.t('task.action.edit.error') }]);
+        res.redirect('/tasks');
+      }
+    }),
     handler: async (req, res) => {
       const query = req.query || {};
       const tasks = await Task.query()
@@ -75,6 +81,12 @@ const routes = [
   {
     method: 'GET',
     url: '/tasks/:id',
+    preValidation: fastifyPassport.authenticate('local', {}, (req, res) => {
+      if (!(req.isAuthenticated())) {
+        req.flash('flash', [{ type: 'warning', text: i18next.t('task.action.edit.error') }]);
+        res.redirect('/tasks');
+      }
+    }),
     handler: async (req, res) => {
       const task = await Task.query()
         .findById(req.params.id)
